@@ -1,0 +1,41 @@
+.b-chart
+{
+    background-color: #fff;
+    border: 1px solid black;
+    position: relative;
+}
+
+.b-chart__chart
+{
+    border: 0 none;
+    border-spacing: 0;
+    table-layout: fixed;
+    width: 100%;
+}
+
+.b-chart__cell-left
+{
+    text-align: right;
+    width: 60px;
+}
+
+.b-chart__cell-right
+{
+    text-align: left;
+    width: 60px;
+}
+
+.b-chart__label
+{
+    position: absolute;
+}
+
+.b-chart__middle
+{
+    padding: 0;
+}
+
+.b-chart__viewport
+{
+    position: relative;
+}

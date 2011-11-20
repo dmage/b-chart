@@ -1,0 +1,14 @@
+.b-busy
+{
+    /*
+    background-image: -moz-linear-gradient(45deg, rgba(0,0,0,0.05) 25%, transparent 25%, transparent 50%, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.05) 75%, transparent 75%);
+    background-size: 50px 50px;
+    */
+    background: #eee;
+    opacity: 0;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}

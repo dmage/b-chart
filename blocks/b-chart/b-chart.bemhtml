@@ -1,0 +1,73 @@
+// vim: set ts=4 sts=4 sw et :
+block b-chart {
+
+    !this.elem, js: {
+        settingsProvider: this.ctx.settingsProvider
+    }
+
+    !this.elem, content: {
+        return [
+            {
+                elem: 'title',
+                content: this.ctx.title || "(no title)"
+            },
+            {
+                elem: 'chart',
+                tag: 'table',
+                content: [
+                    {
+                        elem: 'row-middle',
+                        tag: 'tr',
+                        content: [
+                            {
+                                tag: 'td',
+                                elem: 'cell-middle',
+                                content: [
+                                    {
+                                        elem: 'viewport',
+                                        content: {
+                                            elem: 'canvas'
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                elem: 'legend',
+                content: 'legend'
+            }
+        ];
+    }
+
+    elem axis, elemMod pos left, !this.ctx._wrap, default: {
+        local(
+            this._mode = '',
+            this.ctx._wrap = true,
+            this.ctx = {
+                elem: 'cell-left',
+                content: this.ctx
+            }
+        ) this.apply();
+    }
+
+    elem axis, elemMod pos right, !this.ctx._wrap, default: {
+        local(
+            this._mode = '',
+            this.ctx._wrap = true,
+            this.ctx = {
+                elem: 'cell-right',
+                content: this.ctx
+            }
+        ) this.apply();
+    }
+
+    elem cell-left, tag: 'td'
+
+    elem cell-right, tag: 'td'
+
+    elem canvas, tag: 'canvas'
+
+}

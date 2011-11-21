@@ -20,6 +20,18 @@
             settingsProvider: {
                 name: 'b-chart__static-settings-provider',
                 title: 'Simple chart',
+                xAxes: [
+                    {
+                        pos: 'bottom',
+                        scale: 'b-scale__linear',
+                        rangeProvider: {
+                            name: 'b-chart__static-range-provider',
+                            min: 0,
+                            max: 6
+                        },
+                        content: ["bottom"]
+                    }
+                ],
                 yAxes: [
                     {
                         pos: 'left',
@@ -33,6 +45,8 @@
                     { pos: 'right', content: ["right1"] },
                     { pos: 'left', content: ["left2"] }
                 ],
+                items: [
+                ]
             }
         }
     ]

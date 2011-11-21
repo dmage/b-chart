@@ -19,12 +19,17 @@ BEM.DOM.decl('b-chart', {
 
             var initState = {
                 title: false,
+                xAxes: false,
                 yAxes: false,
                 items: false
             };
 
             var initCheck = function() {
-                var inited = initState.title && initState.yAxes && initState.items;
+                var inited = initState.title &&
+                    initState.xAxes &&
+                    initState.yAxes &&
+                    initState.items;
+
                 if (inited) {
                     _this.ping(false); // send last ping and disable busy timer
                     _this.inited();
@@ -35,6 +40,11 @@ BEM.DOM.decl('b-chart', {
                 title : function(title) {
                     initState.title = true;
                     _this.setTitle(title);
+                    initCheck();
+                },
+                xAxes : function(xAxes) {
+                    initState.xAxes = true;
+                    _this.setXAxes(xAxes);
                     initCheck();
                 },
                 yAxes : function(yAxes) {
@@ -89,7 +99,7 @@ BEM.DOM.decl('b-chart', {
         this.elem('title').text(title);
     },
 
-    destroyYAxes : function() {
+    _destroyYAxes : function() {
         var _this = this;
 
         _this.content.yAxes && $.each(_this.content.yAxes, function() {
@@ -101,7 +111,7 @@ BEM.DOM.decl('b-chart', {
     setYAxes : function(yAxes) {
         var _this = this;
 
-        _this.destroyYAxes();
+        _this._destroyYAxes();
         _this.content.yAxes = yAxes;
 
         function initAxis() {
@@ -126,30 +136,34 @@ BEM.DOM.decl('b-chart', {
             initAxis.call(this);
             this.domElem.appendTo(_this.elem('row-middle'));
         });
+    },
 
-        // FIXME
-        _this.setXAxes([
-            {
-                scale: 'b-scale__linear',
-                rangeProvider: {
-                    name: 'b-chart__static-range-provider',
-                    min: 0,
-                    max: 6
-                }
-            }
-        ]);
+    _destroyXAxes : function() {
+        var _this = this;
+
+        _this.content.xAxes && $.each(_this.content.xAxes, function() {
+            this.domElem && this.domElem.remove();
+        });
+        delete _this.content.xAxes;
     },
 
     setXAxes : function(xAxes) {
-        // FIXME: compare with setYAxes; improve xAxes
-
         var _this = this;
 
+        _this._destroyXAxes();
         _this.content.xAxes = xAxes;
 
-        var xAxis = xAxes[0];
-        xAxis.scale = BEM.create('b-scale__linear');
-        xAxis.scale.input(0, 1); // FIXME
+        function initAxis() {
+            // FIXME add this.domElem = ...
+            this.scale = BEM.create('b-scale__linear');
+            this.scale.input(0, 1); // FIXME
+        }
+
+        var xAxesBottom = xAxes.filter(function(axis) { return axis.pos == 'bottom'; });
+        $.each(xAxesBottom, function() {
+            initAxis.call(this);
+            // FIXME domElem
+        });
     },
 
     setItems : function(items) {

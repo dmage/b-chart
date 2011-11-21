@@ -199,7 +199,17 @@ BEM.DOM.decl('b-chart', {
             this.scale.output(0, _this.dimensions.height - 1);
             this.ticks = this.scale.ticks(5, 5);
             // FIXME render ticks
-            this.block.update();
+            this.block.domElem.css('height', _this.dimensions.height + 'px');
+
+            var ticks = [];
+            for (var i = 0; i < this.ticks.length; ++i) {
+                var tickValue = this.ticks[i];
+                ticks.push({
+                    offset: _this.dimensions.height - Math.round(this.scale.f(tickValue)) - 1,
+                    label: tickValue
+                });
+            }
+            this.block.update(ticks);
         });
 
         $.each(_this.content.xAxes, function() {

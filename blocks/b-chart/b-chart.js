@@ -114,27 +114,33 @@ BEM.DOM.decl('b-chart', {
         _this._destroyYAxes();
         _this.content.yAxes = yAxes;
 
-        function initAxis() {
-            this.domElem = $(BEMHTML.apply([{
+        function createAxis() {
+            return $(BEMHTML.apply([{
                 block: 'b-chart',
                 elem: 'axis',
                 elemMods: { pos: this.pos },
                 content: this.content
             }]));
+        }
+
+        function initAxis(domElem) {
+            this.block = $('.b-axis', domElem).bem('b-axis');
             this.scale = BEM.create('b-scale__linear');
             this.scale.input(0, 1); // FIXME
         }
 
         var yAxesLeft = yAxes.filter(function(axis) { return axis.pos == 'left'; });
         $.each(yAxesLeft, function() {
-            initAxis.call(this);
-            this.domElem.prependTo(_this.elem('row-middle'));
+            var domElem = createAxis.call(this);
+            _this.elem('row-middle').prepend(domElem);
+            initAxis.call(this, domElem);
         });
 
         var yAxesRight = yAxes.filter(function(axis) { return axis.pos == 'right'; });
         $.each(yAxesRight, function() {
-            initAxis.call(this);
-            this.domElem.appendTo(_this.elem('row-middle'));
+            var domElem = createAxis.call(this);
+            _this.elem('row-middle').append(domElem);
+            initAxis.call(this, domElem);
         });
     },
 
@@ -193,6 +199,7 @@ BEM.DOM.decl('b-chart', {
             this.scale.output(0, _this.dimensions.height - 1);
             this.ticks = this.scale.ticks(5, 5);
             // FIXME render ticks
+            this.block.update();
         });
 
         $.each(_this.content.xAxes, function() {

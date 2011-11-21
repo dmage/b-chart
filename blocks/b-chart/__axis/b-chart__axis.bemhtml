@@ -12,6 +12,10 @@ block b-chart, elem axis {
         ) this.apply();
     }
 
+    elemMod pos left, mix: [
+        { block: 'b-axis', mods: { pos: 'left' } }
+    ]
+
     elemMod pos right, !this.ctx._wrap, default: {
         local(
             this._mode = '',
@@ -22,5 +26,9 @@ block b-chart, elem axis {
             }
         ) this.apply();
     }
+
+    elemMod pos right, mix: [
+        { block: 'b-axis', mods: { pos: 'right' } }
+    ]
 
 }

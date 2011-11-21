@@ -187,10 +187,12 @@ BEM.DOM.decl('b-chart', {
 
         this.elem('canvas').attr('width', this.dimensions.width);
         this.elem('canvas').attr('height', this.dimensions.height);
+        this.elem('viewport').css('height', this.dimensions.height + 'px');
 
         $.each(_this.content.yAxes, function() {
             this.scale.output(0, _this.dimensions.height - 1);
             this.ticks = this.scale.ticks(5, 5);
+            // FIXME render ticks
         });
 
         $.each(_this.content.xAxes, function() {

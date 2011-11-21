@@ -13,14 +13,24 @@
     width: 100%;
 }
 
-.b-chart__cell-left
+.b-chart__cell-middle-left
 {
+    background: #fcc;
+    padding: 0;
     text-align: right;
     width: 60px;
 }
 
-.b-chart__cell-right
+.b-chart__cell-middle
 {
+    background: #cfc;
+    padding: 0;
+}
+
+.b-chart__cell-middle-right
+{
+    background: #ccf;
+    padding: 0;
     text-align: left;
     width: 60px;
 }
@@ -28,11 +38,6 @@
 .b-chart__label
 {
     position: absolute;
-}
-
-.b-chart__middle
-{
-    padding: 0;
 }
 
 .b-chart__viewport

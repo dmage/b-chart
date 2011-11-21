@@ -9,7 +9,7 @@ block b-chart {
         return [
             {
                 elem: 'title',
-                content: this.ctx.title || "(no title)"
+                content: this.ctx.title || "Loading..."
             },
             {
                 elem: 'chart',
@@ -42,31 +42,9 @@ block b-chart {
         ];
     }
 
-    elem axis, elemMod pos left, !this.ctx._wrap, default: {
-        local(
-            this._mode = '',
-            this.ctx._wrap = true,
-            this.ctx = {
-                elem: 'cell-left',
-                content: this.ctx
-            }
-        ) this.apply();
-    }
+    elem cell-middle-left, tag: 'td'
 
-    elem axis, elemMod pos right, !this.ctx._wrap, default: {
-        local(
-            this._mode = '',
-            this.ctx._wrap = true,
-            this.ctx = {
-                elem: 'cell-right',
-                content: this.ctx
-            }
-        ) this.apply();
-    }
-
-    elem cell-left, tag: 'td'
-
-    elem cell-right, tag: 'td'
+    elem cell-middle-right, tag: 'td'
 
     elem canvas, tag: 'canvas'
 

@@ -13,10 +13,14 @@ BEM.decl('b-chart-overlay__grid', {
             yAxis = content.yAxes[0],
             f, ticks;
 
+        if (typeof ctx.mozDash !== 'undefined') {
+            ctx.mozDash = [2, 4];
+        }
+
         if (xAxis) {
             f = xAxis.scale.f;
             ticks = xAxis.ticks;
-            ctx.strokeStyle = "rgb(245,245,245)";
+            ctx.strokeStyle = "rgb(235,235,235)";
             ctx.lineWidth = 1;
             for (var l = ticks.length, i = 0; i < l; ++i) {
                 var x = (Math.round(f(ticks[i])) + 0.5);
@@ -39,6 +43,10 @@ BEM.decl('b-chart-overlay__grid', {
                 ctx.lineTo(width, y);
                 ctx.stroke();
             }
+        }
+        
+        if (typeof ctx.mozDash !== 'undefined') {
+            ctx.mozDash = null;
         }
     }
 

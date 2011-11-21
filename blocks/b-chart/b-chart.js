@@ -90,6 +90,8 @@ BEM.DOM.decl('b-chart', {
     },
 
     destroyYAxes : function() {
+        var _this = this;
+
         _this.content.yAxes && $.each(_this.content.yAxes, function() {
             this.domElem && this.domElem.remove();
         });
@@ -146,8 +148,8 @@ BEM.DOM.decl('b-chart', {
         _this.content.xAxes = xAxes;
 
         var xAxis = xAxes[0];
-        this.scale = BEM.create('b-scale__linear');
-        this.scale.input(0, 1); // FIXME
+        xAxis.scale = BEM.create('b-scale__linear');
+        xAxis.scale.input(0, 1); // FIXME
     },
 
     setItems : function(items) {
@@ -167,7 +169,7 @@ BEM.DOM.decl('b-chart', {
         var _this = this;
 
         this.dimensions.height = 200;
-        this.dimensions.width = this.elem('viewport').width();
+        this.dimensions.width = _this.elem('viewport').width();
 
         this.elem('canvas').attr('width', this.dimensions.width);
         this.elem('canvas').attr('height', this.dimensions.height);
@@ -178,8 +180,8 @@ BEM.DOM.decl('b-chart', {
         });
 
         $.each(_this.content.xAxes, function() {
-            this.scale.output(0, this.elem('viewport').width() - 1);
-            this.ticks = this.scale.ticks(Math.floor(this.dimensions.width / 50));
+            this.scale.output(0, _this.dimensions.width - 1);
+            this.ticks = this.scale.ticks(Math.floor(_this.dimensions.width / 50));
         });
 
         this.render();

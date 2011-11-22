@@ -28,8 +28,7 @@
                             name: 'b-chart__static-range-provider',
                             min: 0,
                             max: 6
-                        },
-                        content: ["bottom"]
+                        }
                     }
                 ],
                 yAxes: [

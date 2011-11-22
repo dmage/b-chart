@@ -162,8 +162,13 @@ BEM.DOM.decl('b-chart', {
 
         function initAxis() {
             // FIXME add this.domElem = ...
+            this.rangeProvider = BEM.create(
+                this.rangeProvider.name,
+                this.rangeProvider);
             this.scale = BEM.create('b-scale__linear');
-            this.scale.input(0, 10); // FIXME
+
+            var initialRange = this.rangeProvider.get();
+            this.scale.input(initialRange.min, initialRange.max);
         }
 
         var xAxesBottom = xAxes.filter(function(axis) { return axis.pos == 'bottom'; });

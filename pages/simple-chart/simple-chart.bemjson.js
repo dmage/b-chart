@@ -51,7 +51,7 @@
                         dataProvider: {
                             name: 'i-math-data-provider',
                             func: 'sin',
-                            factor: 1
+                            step: 0.05
                         }
                     }
                 ]

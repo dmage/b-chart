@@ -127,7 +127,7 @@ BEM.DOM.decl('b-chart', {
         function initAxis(domElem) {
             this.block = $('.b-axis', domElem).bem('b-axis');
             this.scale = BEM.create('b-scale__linear');
-            this.scale.input(0, 1); // FIXME
+            this.scale.input(-1, 1); // FIXME
         }
 
         var yAxesLeft = yAxes.filter(function(axis) { return axis.pos == 'left'; });
@@ -163,7 +163,7 @@ BEM.DOM.decl('b-chart', {
         function initAxis() {
             // FIXME add this.domElem = ...
             this.scale = BEM.create('b-scale__linear');
-            this.scale.input(0, 1); // FIXME
+            this.scale.input(0, 10); // FIXME
         }
 
         var xAxesBottom = xAxes.filter(function(axis) { return axis.pos == 'bottom'; });
@@ -180,6 +180,15 @@ BEM.DOM.decl('b-chart', {
 
         function initItem() {
             // FIXME
+            this.dataProvider = BEM.create(
+                this.dataProvider.name,
+                this.dataProvider
+            );
+
+            // FIXME
+            var xAxis = _this.content.xAxes[this.xAxis || 0] || _this.content.xAxes[0];
+            var yAxis = _this.content.yAxes[this.yAxis || 0] || _this.content.yAxes[0];
+            this.data = this.dataProvider.get(xAxis.scale.inputMin, xAxis.scale.inputMax);
         }
 
         $.each(_this.content.items, initItem);
@@ -240,6 +249,12 @@ BEM.DOM.decl('b-chart', {
             content: this.content
         });
         grid.draw(ctx);
+
+        var render = BEM.create('b-chart-overlay__render', {
+            dimensions: this.dimensions,
+            content: this.content
+        });
+        render.draw(ctx);
     }
 
 }, {

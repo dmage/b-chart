@@ -20,8 +20,8 @@ BEM.decl('i-math-data-provider', {
             i += 1;
         }
         return {
-            xData: xData,
-            yData: yData
+            x: xData,
+            y: yData
         };
     },
 

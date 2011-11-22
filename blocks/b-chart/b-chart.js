@@ -245,8 +245,7 @@ BEM.DOM.decl('b-chart', {
 
     render : function() {
         var ctx = this.elem('canvas').get(0).getContext('2d');
-        ctx.fillStyle = "rgb(255,255,255)";
-        ctx.fillRect(0, 0, this.dimensions.width, this.dimensions.height);
+        ctx.clearRect(0, 0, this.dimensions.width, this.dimensions.height);
         //renderChain.run(overlays, 'draw', ctx);
 
         var grid = BEM.create('b-chart-overlay__grid', {

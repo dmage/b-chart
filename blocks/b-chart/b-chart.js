@@ -118,8 +118,7 @@ BEM.DOM.decl('b-chart', {
             return $(BEMHTML.apply([{
                 block: 'b-chart',
                 elem: 'axis',
-                elemMods: { pos: this.pos },
-                content: this.content
+                elemMods: { pos: this.pos }
             }]));
         }
 

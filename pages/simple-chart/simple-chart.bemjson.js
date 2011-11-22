@@ -39,11 +39,10 @@
                         range: {
                             from: 0.0,
                             to: 10.0
-                        },
-                        content: ["left1"]
+                        }
                     },
-                    { pos: 'right', content: ["right1"] },
-                    { pos: 'left', content: ["left2"] }
+                    { pos: 'right' },
+                    { pos: 'left' }
                 ],
                 items: [
                 ]

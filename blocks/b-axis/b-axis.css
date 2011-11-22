@@ -1,8 +1,11 @@
 .b-axis
 {
+    cursor: default;
     font: 70%/100% Arial,sans-serif;
-    overflow: hidden;
     position: relative;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
 }
 
 .b-axis__value
@@ -22,13 +25,32 @@
 
 .b-axis_pos_left .b-axis__value
 {
+    left: 0;
+    right: 0;
+}
+
+.b-axis_pos_right .b-axis__value
+{
+    left: 0;
     right: 0;
 }
 
 .b-axis_pos_left .b-axis__label
 {
+    bottom: -0.5em;
+    left: 0;
+    overflow: hidden;
     right: 7px;
-    top: -0.5em;
+    text-align: right;
+}
+
+.b-axis_pos_right .b-axis__label
+{
+    bottom: -0.5em;
+    left: 7px;
+    overflow: hidden;
+    right: 0;
+    text-align: left;
 }
 
 .b-axis_pos_left .b-axis__tick
@@ -36,17 +58,6 @@
     border-top: 1px solid #000;
     right: 0;
     width: 5px;
-}
-
-.b-axis_pos_right .b-axis__value
-{
-    left: 0;
-}
-
-.b-axis_pos_right .b-axis__label
-{
-    left: 7px;
-    top: -0.5em;
 }
 
 .b-axis_pos_right .b-axis__tick

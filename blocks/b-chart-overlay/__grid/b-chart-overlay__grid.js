@@ -44,7 +44,7 @@ BEM.decl('b-chart-overlay__grid', {
                 ctx.stroke();
             }
         }
-        
+
         if (typeof ctx.mozDash !== 'undefined') {
             ctx.mozDash = null;
         }

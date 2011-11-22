@@ -27,7 +27,7 @@
                         rangeProvider: {
                             name: 'b-chart__static-range-provider',
                             min: 0,
-                            max: 6
+                            max: 20
                         }
                     },
                     {
@@ -36,7 +36,7 @@
                         rangeProvider: {
                             name: 'b-chart__static-range-provider',
                             min: 0,
-                            max: 100
+                            max: 200
                         }
                     }
                 ],
@@ -65,10 +65,21 @@
                         }
                     },
                     {
+                        name: 'cos(x)',
+                        xAxis: 0,
+                        yAxis: 0,
+                        color: '#339',
+                        dataProvider: {
+                            name: 'i-math-data-provider',
+                            func: 'cos',
+                            step: 0.05
+                        }
+                    },
+                    {
                         name: 'sin(x), axis #2',
                         xAxis: 1,
                         yAxis: 0,
-                        color: '#933',
+                        color: '#cc3',
                         dataProvider: {
                             name: 'i-math-data-provider',
                             func: 'sin',

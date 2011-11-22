@@ -25,7 +25,9 @@ BEM.decl('i-math-data-provider', {
         };
     },
 
-    sin : Math.sin
+    sin : Math.sin,
+
+    cos : Math.cos
 
 });
 

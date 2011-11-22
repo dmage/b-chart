@@ -29,6 +29,15 @@
                             min: 0,
                             max: 6
                         }
+                    },
+                    {
+                        pos: 'bottom',
+                        scale: 'b-scale__linear',
+                        rangeProvider: {
+                            name: 'b-chart__static-range-provider',
+                            min: 0,
+                            max: 100
+                        }
                     }
                 ],
                 yAxes: [
@@ -46,7 +55,20 @@
                 items: [
                     {
                         name: 'sin(x)',
+                        xAxis: 0,
+                        yAxis: 0,
                         color: '#393',
+                        dataProvider: {
+                            name: 'i-math-data-provider',
+                            func: 'sin',
+                            step: 0.05
+                        }
+                    },
+                    {
+                        name: 'sin(x), axis #2',
+                        xAxis: 1,
+                        yAxis: 0,
+                        color: '#933',
                         dataProvider: {
                             name: 'i-math-data-provider',
                             func: 'sin',

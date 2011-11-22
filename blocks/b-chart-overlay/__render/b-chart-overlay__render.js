@@ -23,7 +23,7 @@ BEM.decl('b-chart-overlay__render', {
             xf = xAxis.scale.f;
             yf = yAxis.scale.f;
 
-            ctx.strokeStyle = "rgb(100,200,100)";
+            ctx.strokeStyle = item.color || "#000";
             ctx.lineWidth = 1;
             ctx.beginPath();
 

@@ -14,7 +14,8 @@ BEM.DOM.decl('b-chart', {
             };
             _this.content = {
                 xAxes: [],
-                yAxes: []
+                yAxes: [],
+                items: []
             };
 
             var initState = {
@@ -54,11 +55,12 @@ BEM.DOM.decl('b-chart', {
                 },
                 items : function(items) {
                     initState.items = true;
-                    _this.setItems();
+                    _this.setItems(items);
                     initCheck();
                 },
                 ping: function() {
                     _this.ping();
+                    initCheck();
                 }
             };
 
@@ -172,7 +174,15 @@ BEM.DOM.decl('b-chart', {
     },
 
     setItems : function(items) {
-        // ...
+        var _this = this;
+
+        _this.content.items = items;
+
+        function initItem() {
+            // FIXME
+        }
+
+        $.each(_this.content.items, initItem);
     },
 
     inited : function() {

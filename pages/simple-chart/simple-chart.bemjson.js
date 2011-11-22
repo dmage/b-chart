@@ -45,6 +45,15 @@
                     { pos: 'left' }
                 ],
                 items: [
+                    {
+                        name: 'sin(x)',
+                        color: '#393',
+                        dataProvider: {
+                            name: 'i-math-data-provider',
+                            func: 'sin',
+                            factor: 1
+                        }
+                    }
                 ]
             }
         }

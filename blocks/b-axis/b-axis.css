@@ -8,6 +8,18 @@
     -webkit-user-select: none;
 }
 
+.b-axis_pos_top
+{
+    height: 100%;
+    overflow: hidden;
+}
+
+.b-axis_pos_bottom
+{
+    height: 100%;
+    overflow: hidden;
+}
+
 .b-axis__value
 {
     position: absolute;

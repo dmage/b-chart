@@ -9,7 +9,8 @@
         { elem: 'static-settings-provider' },
         { elem: 'static-range-provider' },
         { block: 'b-scale', elem: 'linear' },
-        { block: 'i-math-data-provider' }
+        { block: 'i-math-data-provider' },
+        { block: 'i-task-scheduler' }
     ],
     mustDeps: [
         {

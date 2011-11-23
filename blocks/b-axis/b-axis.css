@@ -35,6 +35,16 @@
     right: 0;
 }
 
+.b-axis_pos_top .b-axis__value
+{
+    bottom: 0px;
+}
+
+.b-axis_pos_bottom .b-axis__value
+{
+    top: 0px;
+}
+
 .b-axis_pos_left .b-axis__label
 {
     bottom: -0.5em;
@@ -53,6 +63,24 @@
     text-align: left;
 }
 
+.b-axis_pos_top .b-axis__label
+{
+    left: -100px;
+    overflow: hidden;
+    text-align: center;
+    bottom: 7px;
+    width: 200px;
+}
+
+.b-axis_pos_bottom .b-axis__label
+{
+    left: -100px;
+    overflow: hidden;
+    text-align: center;
+    top: 7px;
+    width: 200px;
+}
+
 .b-axis_pos_left .b-axis__tick
 {
     border-top: 1px solid #000;
@@ -65,4 +93,18 @@
     border-top: 1px solid #000;
     left: 0;
     width: 5px;
+}
+
+.b-axis_pos_top .b-axis__tick
+{
+    border-left: 1px solid #000;
+    bottom: 0;
+    height: 5px;
+}
+
+.b-axis_pos_bottom .b-axis__tick
+{
+    border-left: 1px solid #000;
+    top: 0;
+    height: 5px;
 }

@@ -13,27 +13,23 @@ block b-chart {
             },
             {
                 elem: 'chart',
-                tag: 'table',
-                content: [
-                    {
-                        elem: 'row-middle',
-                        tag: 'tr',
-                        content: [
-                            {
-                                tag: 'td',
-                                elem: 'cell-middle',
-                                content: [
-                                    {
-                                        elem: 'viewport',
-                                        content: {
-                                            elem: 'canvas'
-                                        }
-                                    }
-                                ]
+                content: {
+                    elem: 'chart-body',
+                    content: {
+                        elem: 'row',
+                        elemMods: { v: 'middle' },
+                        content: {
+                            elem: 'cell',
+                            elemMods: { v: 'middle' },
+                            content: {
+                                elem: 'viewport',
+                                content: {
+                                    elem: 'canvas'
+                                }
                             }
-                        ]
+                        }
                     }
-                ]
+                }
             },
             {
                 elem: 'legend',
@@ -42,9 +38,13 @@ block b-chart {
         ];
     }
 
-    elem cell-middle-left, tag: 'td'
+    elem chart, tag: 'table'
 
-    elem cell-middle-right, tag: 'td'
+    elem chart-body, tag: 'tbody'
+
+    elem row, tag: 'tr'
+
+    elem cell, tag: 'td'
 
     elem canvas, tag: 'canvas'
 

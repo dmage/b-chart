@@ -1,8 +1,19 @@
 /** @requires BEM.DOM */
 
 (function() {
+"use strict";
 
 BEM.DOM.decl('b-chart', {
+
+    _getXAxes : function(pos) {
+        var axes = this.content.xAxes || [];
+        return axes.filter(function(axis) { return axis.pos == pos; });
+    },
+
+    _getYAxes : function(pos) {
+        var axes = this.content.yAxes || [];
+        return axes.filter(function(axis) { return axis.pos == pos; });
+    },
 
     onSetMod : {
         'js' : function() {
@@ -15,7 +26,7 @@ BEM.DOM.decl('b-chart', {
             _this.content = {
                 xAxes: [],
                 yAxes: [],
-                items: []
+                items: [],
             };
 
             var initState = {
@@ -105,8 +116,10 @@ BEM.DOM.decl('b-chart', {
         var _this = this;
 
         _this.content.yAxes && $.each(_this.content.yAxes, function() {
-            this.domElem && this.domElem.remove();
+            this.block && BEM.DOM.destruct(this.block.domElem);
         });
+        BEM.DOM.destruct(_this.findElem('cell', 'h', 'left'));
+        BEM.DOM.destruct(_this.findElem('cell', 'h', 'right'));
         delete _this.content.yAxes;
     },
 
@@ -116,7 +129,7 @@ BEM.DOM.decl('b-chart', {
         _this._destroyYAxes();
         _this.content.yAxes = yAxes;
 
-        function createAxis() {
+        function createDomElem() {
             return $(BEMHTML.apply([{
                 block: 'b-chart',
                 elem: 'axis',
@@ -126,23 +139,26 @@ BEM.DOM.decl('b-chart', {
 
         function initAxis(domElem) {
             this.block = $('.b-axis', domElem).bem('b-axis');
+
             this.scale = BEM.create('b-scale__linear');
             this.scale.input(-1, 1); // FIXME
         }
 
-        var yAxesLeft = yAxes.filter(function(axis) { return axis.pos == 'left'; });
+        var yAxesLeft = _this._getYAxes('left');
         $.each(yAxesLeft, function() {
-            var domElem = createAxis.call(this);
-            _this.elem('row-middle').prepend(domElem);
+            var domElem = createDomElem.call(this);
+            _this.elem('row', 'v', 'middle').prepend(domElem);
             initAxis.call(this, domElem);
         });
 
-        var yAxesRight = yAxes.filter(function(axis) { return axis.pos == 'right'; });
+        var yAxesRight = _this._getYAxes('right');
         $.each(yAxesRight, function() {
-            var domElem = createAxis.call(this);
-            _this.elem('row-middle').append(domElem);
+            var domElem = createDomElem.call(this);
+            _this.elem('row', 'v', 'middle').append(domElem);
             initAxis.call(this, domElem);
         });
+
+        // FIXME add gap to X axes
     },
 
     _destroyXAxes : function() {
@@ -160,8 +176,42 @@ BEM.DOM.decl('b-chart', {
         _this._destroyXAxes();
         _this.content.xAxes = xAxes;
 
-        function initAxis() {
-            // FIXME add this.domElem = ...
+        var yAxesLeftCount = _this._getYAxes('left').length;
+        var yAxesRightCount = _this._getYAxes('right').length;
+
+        function createDomElem() {
+            var leftGap = "";
+            for (var i = 0; i < yAxesLeftCount; ++i) {
+                leftGap += BEMHTML.apply([{
+                    block: 'b-chart',
+                    elem: 'cell',
+                    elemMods: { h: 'left', v: this.pos }
+                }]);
+            }
+            var rightGap = "";
+            for (var i = 0; i < yAxesRightCount; ++i) {
+                rightGap += BEMHTML.apply([{
+                    block: 'b-chart',
+                    elem: 'cell',
+                    elemMods: { h: 'right', v: this.pos }
+                }]);
+            }
+            var content = BEMHTML.apply([{
+                block: 'b-chart',
+                elem: 'axis',
+                elemMods: { pos: this.pos }
+            }]);
+            return $(BEMHTML.apply([{
+                block: 'b-chart',
+                elem: 'row',
+                elemMods: { v: this.pos },
+                content: leftGap + content + rightGap
+            }]));
+        }
+
+        function initAxis(domElem) {
+            this.block = $('.b-axis', domElem).bem('b-axis');
+
             this.rangeProvider = BEM.create(
                 this.rangeProvider.name,
                 this.rangeProvider);
@@ -171,10 +221,18 @@ BEM.DOM.decl('b-chart', {
             this.scale.input(initialRange.min, initialRange.max);
         }
 
-        var xAxesBottom = xAxes.filter(function(axis) { return axis.pos == 'bottom'; });
+        var xAxesTop = _this._getXAxes('top');
+        $.each(xAxesTop, function() {
+            var domElem = createDomElem.call(this);
+            _this.elem('chart-body').prepend(domElem);
+            initAxis.call(this, domElem);
+        });
+
+        var xAxesBottom = _this._getXAxes('bottom');
         $.each(xAxesBottom, function() {
-            initAxis.call(this);
-            // FIXME domElem
+            var domElem = createDomElem.call(this);
+            _this.elem('chart-body').append(domElem);
+            initAxis.call(this, domElem);
         });
     },
 
@@ -221,7 +279,6 @@ BEM.DOM.decl('b-chart', {
         $.each(_this.content.yAxes, function() {
             this.scale.output(0, _this.dimensions.height - 1);
             this.ticks = this.scale.ticks(5, 5);
-            // FIXME render ticks
             this.block.domElem.css('height', _this.dimensions.height + 'px');
 
             var ticks = [];
@@ -238,6 +295,17 @@ BEM.DOM.decl('b-chart', {
         $.each(_this.content.xAxes, function() {
             this.scale.output(0, _this.dimensions.width - 1);
             this.ticks = this.scale.ticks(Math.floor(_this.dimensions.width / 50));
+            this.block.domElem.css('width', _this.dimensions.width + 'px');
+
+            var ticks = [];
+            for (var i = 0; i < this.ticks.length; ++i) {
+                var tickValue = this.ticks[i];
+                ticks.push({
+                    offset: Math.round(this.scale.f(tickValue)),
+                    label: tickValue
+                });
+            }
+            this.block.update(ticks);
         });
 
         this.render();

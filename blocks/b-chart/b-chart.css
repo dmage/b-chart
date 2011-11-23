@@ -1,3 +1,8 @@
+body {
+    /* Prevent width change when scrollbar appearance */
+    overflow-y: scroll;
+}
+
 .b-chart
 {
     background-color: #fff;
@@ -13,30 +18,35 @@
     width: 100%;
 }
 
-.b-chart__cell-middle-left
+.b-chart__cell
 {
     padding: 0;
+}
+
+.b-chart__cell_h_left
+{
     text-align: right;
     vertical-align: top;
     width: 60px;
 }
 
-.b-chart__cell-middle
+.b-chart__cell_h_right
 {
-    padding: 0;
-}
-
-.b-chart__cell-middle-right
-{
-    padding: 0;
     text-align: left;
     vertical-align: top;
     width: 60px;
 }
 
-.b-chart__label
+.b-chart__cell_v_top
 {
-    position: absolute;
+    vertical-align: bottom;
+    height: 30px;
+}
+
+.b-chart__cell_v_bottom
+{
+    vertical-align: top;
+    height: 30px;
 }
 
 .b-chart__viewport

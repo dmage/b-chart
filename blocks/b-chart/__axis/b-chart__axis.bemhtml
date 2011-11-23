@@ -1,34 +1,32 @@
 // vim: set ts=4 sts=4 sw et :
 block b-chart, elem axis {
 
-    elemMod pos left, !this.ctx._wrap, default: {
+    this.elemMods.pos == 'left' || this.elemMods.pos == 'right', !this.ctx._wrap, default: {
         local(
             this._mode = '',
             this.ctx._wrap = true,
             this.ctx = {
-                elem: 'cell-middle-left',
+                elem: 'cell',
+                elemMods: { v: 'middle', h: this.elemMods.pos },
                 content: this.ctx
             }
         ) this.apply();
     }
 
-    elemMod pos left, mix: [
-        { block: 'b-axis', mods: { pos: 'left' } }
-    ]
-
-    elemMod pos right, !this.ctx._wrap, default: {
+    this.elemMods.pos == 'top' || this.elemMods.pos == 'bottom', !this.ctx._wrap, default: {
         local(
             this._mode = '',
             this.ctx._wrap = true,
             this.ctx = {
-                elem: 'cell-middle-right',
+                elem: 'cell',
+                elemMods: { v: this.elemMods.pos, h: 'middle' },
                 content: this.ctx
             }
         ) this.apply();
     }
 
-    elemMod pos right, mix: [
-        { block: 'b-axis', mods: { pos: 'right' } }
+    this.elemMods.pos, mix: [
+        { block: 'b-axis', mods: { pos: this.elemMods.pos } }
     ]
 
 }

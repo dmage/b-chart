@@ -4,7 +4,7 @@
 
 BEM.decl('b-chart-overlay__grid', {
 
-    draw : function(ctx) {
+    draw : function(sched, ctx) {
         var dim = this.params.dimensions,
             width = dim.width,
             height = dim.height,
@@ -48,6 +48,8 @@ BEM.decl('b-chart-overlay__grid', {
         if (typeof ctx.mozDash !== 'undefined') {
             ctx.mozDash = null;
         }
+
+        sched.next();
     }
 
 });

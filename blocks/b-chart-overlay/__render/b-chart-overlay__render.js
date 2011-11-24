@@ -4,7 +4,7 @@
 
 BEM.decl('b-chart-overlay__render', {
 
-    draw : function(ctx) {
+    draw : function(sched, ctx) {
         var dim = this.params.dimensions,
             width = dim.width,
             height = dim.height,
@@ -38,6 +38,8 @@ BEM.decl('b-chart-overlay__render', {
 
             ctx.stroke();
         }
+
+        sched.next();
     }
 
 });

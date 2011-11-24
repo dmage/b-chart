@@ -3,6 +3,10 @@
 (function() {
 "use strict";
 
+var PRIO_SYSTEM = BEM.blocks['i-task-scheduler'].PRIO_SYSTEM;
+var PRIO_UI = BEM.blocks['i-task-scheduler'].PRIO_UI;
+var taskScheduler = BEM.blocks['i-task-scheduler'].instance;
+
 BEM.DOM.decl('b-chart', {
 
     _getXAxes : function(pos) {
@@ -260,6 +264,29 @@ BEM.DOM.decl('b-chart', {
     inited : function() {
         var _this = this;
 
+        // FIXME get overlays from settingsProvider
+        var _overlays = [
+            'b-chart-overlay__grid',
+            'b-chart-overlay__render'
+        ];
+        var _bemOverlays = [];
+        _this.overlayTasks = [
+            function(sched, ctx) {
+                ctx.clearRect(0, 0, _this.dimensions.width, _this.dimensions.height);
+                sched.next();
+            }
+        ];
+        $.each(_overlays, function() {
+            var bem = BEM.create(this, {
+                dimensions: _this.dimensions,
+                content: _this.content
+            });
+            _bemOverlays.push(bem);
+            _this.overlayTasks.push(function(sched, ctx) {
+                bem.draw(sched, ctx);
+            });
+        });
+
         _this.applySize();
         _this.bindToWin('resize', function() {
             _this.applySize();
@@ -269,6 +296,7 @@ BEM.DOM.decl('b-chart', {
     applySize : function() {
         var _this = this;
 
+        console.log('resize');
         this.dimensions.height = 200;
         this.dimensions.width = _this.elem('viewport').width();
 
@@ -312,21 +340,13 @@ BEM.DOM.decl('b-chart', {
     },
 
     render : function() {
-        var ctx = this.elem('canvas').get(0).getContext('2d');
-        ctx.clearRect(0, 0, this.dimensions.width, this.dimensions.height);
-        //renderChain.run(overlays, 'draw', ctx);
+        var _this = this;
 
-        var grid = BEM.create('b-chart-overlay__grid', {
-            dimensions: this.dimensions,
-            content: this.content
+        var ctx = _this.elem('canvas').get(0).getContext('2d');
+        taskScheduler.run(PRIO_UI, this.overlayTasks, {
+            args: [ctx],
+            id: _this._uniqId
         });
-        grid.draw(ctx);
-
-        var render = BEM.create('b-chart-overlay__render', {
-            dimensions: this.dimensions,
-            content: this.content
-        });
-        render.draw(ctx);
     }
 
 }, {

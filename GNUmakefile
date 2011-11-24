@@ -46,7 +46,7 @@ BEM_CREATE=bem create block \
 DO_GIT=@echo -- git $1 $2; \
 	if [ -d $2 ]; \
 		then \
-			cd $2 && echo git pull origin master; \
+			cd $2 && git pull origin master; \
 		else \
 			git clone $1 $2; \
 	fi

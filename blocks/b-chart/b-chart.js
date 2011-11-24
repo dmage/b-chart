@@ -263,6 +263,7 @@ BEM.DOM.decl('b-chart', {
 
     inited : function() {
         var _this = this;
+        var canvas = this.elem('canvas').get(0);
 
         // FIXME get overlays from settingsProvider
         var _overlays = [
@@ -272,7 +273,11 @@ BEM.DOM.decl('b-chart', {
         var _bemOverlays = [];
         _this.overlayTasks = [
             function(sched, ctx) {
-                ctx.clearRect(0, 0, _this.dimensions.width, _this.dimensions.height);
+                if ($.browser.webkit) {
+                    canvas.width = canvas.width;
+                } else {
+                    ctx.clearRect(0, 0, _this.dimensions.width, _this.dimensions.height);
+                }
                 sched.next();
             }
         ];
@@ -289,14 +294,18 @@ BEM.DOM.decl('b-chart', {
 
         _this.applySize();
         _this.bindToWin('resize', function() {
-            _this.applySize();
+            taskScheduler.run(PRIO_SYSTEM, [function(sched) {
+                _this.applySize();
+                sched.next();
+            }], {
+                id: _this._uniqId + ".resize"
+            });
         });
     },
 
     applySize : function() {
         var _this = this;
 
-        console.log('resize');
         this.dimensions.height = 200;
         this.dimensions.width = _this.elem('viewport').width();
 
@@ -345,7 +354,7 @@ BEM.DOM.decl('b-chart', {
         var ctx = _this.elem('canvas').get(0).getContext('2d');
         taskScheduler.run(PRIO_UI, this.overlayTasks, {
             args: [ctx],
-            id: _this._uniqId
+            id: _this._uniqId + ".draw"
         });
     }
 

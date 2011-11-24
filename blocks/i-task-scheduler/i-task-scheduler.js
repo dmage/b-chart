@@ -52,7 +52,6 @@ BEM.decl('i-task-scheduler', {
         };
         prioBlock.queue.push(task);
         if (context.id) {
-            console.log('create task', context.id);
             this.byId[context.id] = task;
         }
 
@@ -67,7 +66,6 @@ BEM.decl('i-task-scheduler', {
 
     _nextTask : function() {
         if (this.currentTask && this.currentTask.context.id) {
-            console.log('delete task', this.currentTask.context.id);
             delete this.byId[this.currentTask.context.id];
         }
 
@@ -102,7 +100,6 @@ BEM.decl('i-task-scheduler', {
         var nextFunc;
         if (this.minPrio !== null && this.currentPrio !== null &&
             this.minPrio < this.currentPrio) {
-            console.log('switch context');
             // urgent task available
             if (typeof func !== 'undefined') {
                 this.currentTask.subtasks.unshift(func);
@@ -120,7 +117,6 @@ BEM.decl('i-task-scheduler', {
                 if (!this._nextTask()) {
                     break;
                 }
-                console.log('next task');
             }
             if (this.currentTask !== null) {
                 nextFunc = this.currentTask.subtasks.shift();
@@ -132,13 +128,11 @@ BEM.decl('i-task-scheduler', {
             var context = (this.currentTask && this.currentTask.context) || {};
             var args = [_this].concat(context.args || []);
             if (+new Date() - +this.lastTimeout > this.__self.lockTime) {
-                console.log("via timeout", +new Date() - +this.lastTimeout);
                 setTimeout(function() {
                     _this.lastTimeout = new Date();
                     nextFunc.apply(_this, args);
-                }, 0);
+                }, _this.__self.collectTime);
             } else {
-                //console.log("next");
                 nextFunc.apply(_this, args);
             }
         }
@@ -150,7 +144,8 @@ BEM.decl('i-task-scheduler', {
     PRIO_DATA : 0,
     PRIO_UI : 5,
 
-    lockTime : 100
+    collectTime : 10,
+    lockTime : 50
 
 });
 

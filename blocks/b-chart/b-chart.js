@@ -174,6 +174,52 @@ BEM.DOM.decl('b-chart', {
         delete _this.content.xAxes;
     },
 
+    _initXAxis : function(xAxisNo, domElem) {
+        var _this = this,
+            xAxis = this.content.xAxes[xAxisNo];
+
+        xAxis.block = $('.b-axis', domElem).bem('b-axis');
+
+        xAxis.rangeProvider = BEM.create(
+            xAxis.rangeProvider.name,
+            xAxis.rangeProvider);
+        xAxis.scale = BEM.create('b-scale__linear');
+
+        xAxis.rangeProvider.on('update', function(e) {
+            _this._updateXAxis(xAxisNo);
+            _this.render();
+        });
+
+        // FIXME useless, already sets in _updateXAxis
+        var range = xAxis.rangeProvider.get();
+        xAxis.scale.input(range.min, range.max);
+    },
+
+    _updateXAxis : function(xAxisNo) {
+        var _this = this,
+            xAxis = this.content.xAxes[xAxisNo],
+            items = this.content.items;
+
+        var range = xAxis.rangeProvider.get();
+        xAxis.scale.input(range.min, range.max);
+        xAxis.ticks = xAxis.scale.ticks(Math.floor(_this.dimensions.width / 50));
+
+        var ticks = [];
+        for (var i = 0; i < xAxis.ticks.length; ++i) {
+            var tickValue = xAxis.ticks[i];
+            ticks.push({
+                offset: Math.round(xAxis.scale.f(tickValue)),
+                label: (""+tickValue).substr(-6) // FIXME
+            });
+        }
+        xAxis.block.update(ticks);
+
+        for (var i = 0, l = items.length; i < l; ++i) {
+            if (items[i].xAxis != xAxisNo) continue;
+            items[i].data = items[i].dataProvider.get(xAxis.scale.inputMin, xAxis.scale.inputMax);
+        }
+    },
+
     setXAxes : function(xAxes) {
         var _this = this;
 
@@ -213,31 +259,20 @@ BEM.DOM.decl('b-chart', {
             }]));
         }
 
-        function initAxis(domElem) {
-            this.block = $('.b-axis', domElem).bem('b-axis');
+        for (var xAxisNo = 0, l = xAxes.length; xAxisNo < l; ++xAxisNo) {
+            var xAxis = xAxes[xAxisNo],
+                domElem;
 
-            this.rangeProvider = BEM.create(
-                this.rangeProvider.name,
-                this.rangeProvider);
-            this.scale = BEM.create('b-scale__linear');
+            if (xAxis.pos == 'top') {
+                domElem = createDomElem.call(xAxis);
+                _this.elem('chart-body').prepend(domElem);
+            } else if (xAxis.pos == 'bottom') {
+                domElem = createDomElem.call(xAxis);
+                _this.elem('chart-body').append(domElem);
+            }
 
-            var initialRange = this.rangeProvider.get();
-            this.scale.input(initialRange.min, initialRange.max);
+            _this._initXAxis(xAxisNo, domElem);
         }
-
-        var xAxesTop = _this._getXAxes('top');
-        $.each(xAxesTop, function() {
-            var domElem = createDomElem.call(this);
-            _this.elem('chart-body').prepend(domElem);
-            initAxis.call(this, domElem);
-        });
-
-        var xAxesBottom = _this._getXAxes('bottom');
-        $.each(xAxesBottom, function() {
-            var domElem = createDomElem.call(this);
-            _this.elem('chart-body').append(domElem);
-            initAxis.call(this, domElem);
-        });
     },
 
     setItems : function(items) {
@@ -304,7 +339,8 @@ BEM.DOM.decl('b-chart', {
     },
 
     applySize : function() {
-        var _this = this;
+        var _this = this,
+            xAxes = this.content.xAxes;
 
         this.dimensions.height = 200;
         this.dimensions.width = _this.elem('viewport').width();
@@ -329,21 +365,12 @@ BEM.DOM.decl('b-chart', {
             this.block.update(ticks);
         });
 
-        $.each(_this.content.xAxes, function() {
-            this.scale.output(0, _this.dimensions.width - 1);
-            this.ticks = this.scale.ticks(Math.floor(_this.dimensions.width / 50));
-            this.block.domElem.css('width', _this.dimensions.width + 'px');
-
-            var ticks = [];
-            for (var i = 0; i < this.ticks.length; ++i) {
-                var tickValue = this.ticks[i];
-                ticks.push({
-                    offset: Math.round(this.scale.f(tickValue)),
-                    label: tickValue
-                });
-            }
-            this.block.update(ticks);
-        });
+        for (var xAxisNo = 0, l = xAxes.length; xAxisNo < l; ++xAxisNo) {
+            var xAxis = xAxes[xAxisNo];
+            xAxis.scale.output(0, _this.dimensions.width - 1);
+            xAxis.block.domElem.css('width', _this.dimensions.width + 'px');
+            _this._updateXAxis(xAxisNo);
+        }
 
         this.render();
     },

@@ -25,9 +25,9 @@
                         pos: 'bottom',
                         scale: 'b-scale__linear',
                         rangeProvider: {
-                            name: 'b-chart__static-range-provider',
-                            min: 0,
-                            max: 20
+                            name: 'i-time-range-provider',
+                            period: 50,
+                            updateInterval: 500
                         }
                     },
                     {

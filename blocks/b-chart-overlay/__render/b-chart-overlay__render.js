@@ -5,12 +5,15 @@
 BEM.decl('b-chart-overlay__render', {
 
     _run : function(sched, ctx, itemNo) {
-        var content = this.params.content;
+        var _this = this,
+            content = this.params.content;
 
         if (itemNo >= content.items.length) {
             return sched.next();
         } else {
-            this.drawItem(sched, ctx, itemNo);
+            sched.next(function(sched, ctx) {
+                _this.drawItem(sched, ctx, itemNo);
+            });
         }
     },
 

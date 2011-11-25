@@ -7,6 +7,7 @@ BEM.decl('i-math-data-provider', {
     get : function(xbegin, xend) {
         var step = this.params.step || 1;
         var f = this[this.params.func || 'sin'] || this.sin;
+        var factor = this.params.factor || 1;
 
         var x = Math.ceil(xbegin / step) * step;
         var i = 0;
@@ -15,7 +16,7 @@ BEM.decl('i-math-data-provider', {
         var yData = new Array(length);
         while (x < xend) {
             xData[i] = x;
-            yData[i] = f(x);
+            yData[i] = f(x * factor);
             x += step;
             i += 1;
         }

@@ -42,6 +42,7 @@ BEM.decl('i-task-scheduler', {
             var task = this.byId[context.id];
             task.subtasks = subtasks.slice();
             task.context = context;
+            task.reset = true;
             return;
         }
 
@@ -64,8 +65,9 @@ BEM.decl('i-task-scheduler', {
         }
     },
 
-    _nextTask : function() {
-        if (this.currentTask && this.currentTask.context.id) {
+    _nextTask : function(finished) {
+        finished = (typeof finished === 'undefined') ? true : finished;
+        if (finished && this.currentTask && this.currentTask.context.id) {
             delete this.byId[this.currentTask.context.id];
         }
 
@@ -97,6 +99,11 @@ BEM.decl('i-task-scheduler', {
     },
 
     next : function(func) {
+        if (this.currentTask !== null && this.currentTask.reset) {
+            delete func;
+            delete this.currentTask.reset;
+        }
+
         var nextFunc;
         if (this.minPrio !== null && this.currentPrio !== null &&
             this.minPrio < this.currentPrio) {
@@ -108,7 +115,7 @@ BEM.decl('i-task-scheduler', {
             currentPrioBlock.revQueue.push(this.currentTask);
 
             // swtich to urgent task
-            this._nextTask();
+            this._nextTask(false);
         } else {
             nextFunc = func;
         }

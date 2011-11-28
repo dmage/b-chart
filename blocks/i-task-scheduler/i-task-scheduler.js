@@ -1,6 +1,7 @@
 /** @requires BEM */
 
 (function() {
+"use strict";
 
 BEM.decl('i-task-scheduler', {
 
@@ -24,13 +25,13 @@ BEM.decl('i-task-scheduler', {
                 break;
             }
             if (tasks[i].prio > prio) {
-                prioBlock = { prio: prio, queue: [], revQueue: [] };
+                prioBlock = { prio: prio, queue: [], revQueue: [], delayedQueue: [] };
                 tasks.splice(i, 0, prioBlock);
                 break;
             }
         }
         if (!prioBlock) {
-            prioBlock = { prio: prio, queue: [], revQueue: [] };
+            prioBlock = { prio: prio, queue: [], revQueue: [], delayedQueue: [] };
             tasks.push(prioBlock);
         }
         return prioBlock;
@@ -38,6 +39,9 @@ BEM.decl('i-task-scheduler', {
 
     run : function(prio, subtasks, context) {
         context = context || {};
+        if (context.delay) {
+            context.startTime = new Date(+new Date() + context.delay);
+        }
         if (context.id && this.byId[context.id]) {
             var task = this.byId[context.id];
             task.subtasks = subtasks.slice();
@@ -51,7 +55,11 @@ BEM.decl('i-task-scheduler', {
             subtasks: subtasks.slice(),
             context: context
         };
-        prioBlock.queue.push(task);
+        if (context.startTime) {
+            prioBlock.delayedQueue.push(task);
+        } else {
+            prioBlock.queue.push(task);
+        }
         if (context.id) {
             this.byId[context.id] = task;
         }
@@ -61,7 +69,7 @@ BEM.decl('i-task-scheduler', {
         }
 
         if (this.currentTask === null) {
-            this.next();
+            this.waitForNextTask();
         }
     },
 
@@ -74,7 +82,23 @@ BEM.decl('i-task-scheduler', {
         var tasks = this.tasks;
         var prioBlock;
         for (var i = 0, l = tasks.length; i < l; ++i) {
-            if (tasks[i].queue.length > 0 || tasks[i].revQueue.length > 0) {
+            if (tasks[i].delayedQueue.length > 0) {
+                var queue = tasks[i].delayedQueue,
+                    now = +new Date(),
+                    j = 0;
+                while (j < queue.length) {
+                    if (+queue[j].context.startTime <= now) {
+                        var x = queue.splice(j, 1);
+                        tasks[i].revQueue.push(x[0]);
+                    } else {
+                        ++j;
+                    }
+                }
+            }
+
+            if (tasks[i].queue.length > 0 ||
+                tasks[i].revQueue.length > 0)
+            {
                 prioBlock = tasks[i];
                 break;
             }
@@ -100,7 +124,7 @@ BEM.decl('i-task-scheduler', {
 
     next : function(func) {
         if (this.currentTask !== null && this.currentTask.reset) {
-            delete func;
+            func = (void 0);
             delete this.currentTask.reset;
         }
 
@@ -142,6 +166,56 @@ BEM.decl('i-task-scheduler', {
             } else {
                 nextFunc.apply(_this, args);
             }
+        } else {
+            this.waitForNextTask();
+        }
+    },
+
+    _waitTimeForPrioBlock : function(prioBlock, now) {
+        if (prioBlock.queue.length > 0 || prioBlock.revQueue.length > 0) {
+            return null;
+        }
+
+        var waitTime;
+        for (var i = 0, l = prioBlock.delayedQueue.length; i < l; ++i) {
+            var task = prioBlock.delayedQueue[i];
+            var taskWaitTime = +task.context.startTime - now;
+            if (typeof waitTime === 'undefined' || taskWaitTime < waitTime) {
+                waitTime = taskWaitTime;
+            }
+        }
+        return waitTime;
+    },
+
+    waitForNextTask : function() {
+        var _this = this,
+            tasks = _this.tasks,
+            waitTime,
+            now = +new Date;
+
+        for (var i = 0, l = tasks.length; i < l; ++i) {
+            var blockWaitTime = _this._waitTimeForPrioBlock(tasks[i], now);
+            if (blockWaitTime === null) {
+                waitTime = 0;
+            } else if (typeof waitTime === 'undefined' || blockWaitTime < waitTime) {
+                waitTime = blockWaitTime;
+            }
+            if (waitTime <= 0) {
+                break;
+            }
+        }
+
+        if (_this.waitTimeout) {
+            clearTimeout(_this.waitTimeout);
+            delete _this.waitTimeout;
+        }
+        if (waitTime <= 0) {
+            _this.next();
+        } else if (typeof waitTime !== 'undefined') {
+            _this.waitTimeout = setTimeout(function() {
+                _this.lastTimeout = new Date();
+                _this.next();
+            }, waitTime);
         }
     }
 

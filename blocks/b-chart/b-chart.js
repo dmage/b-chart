@@ -149,7 +149,6 @@ BEM.DOM.decl('b-chart', {
         }
 
         _this.renderTasks.push(function(sched) {
-            console.log(localLayers);
             overlay.draw(sched, localLayers);
         });
     },
@@ -279,12 +278,24 @@ BEM.DOM.decl('b-chart', {
     _updateXAxisRange : function(xAxisNo) {
         var _this = this,
             xAxis = _this.content.xAxes[xAxisNo],
+            scale = xAxis.scale,
             items = _this.content.items,
+            layers = _this.content.layers,
             range = xAxis.rangeProvider.get();
 
         for (var i = 0, l = items.length; i < l; ++i) {
             if (items[i].xAxis != xAxisNo) continue;
             items._rendered = false;
+        }
+
+        var factor = (scale.outputMax - scale.outputMin)/(scale.inputMax - scale.inputMin);
+        var delta = range.min - scale.inputMin;
+        for (var i = 0, l = layers.length; i < l; ++i) {
+            // FIXME sum shifts
+            // FIXME support factor update
+            var layer = layers[i];
+            if (layer.xAxis != xAxisNo) continue;
+            layer.canvas.css('left', -Math.round(delta*factor) + 'px');
         }
 
         xAxis.scale.input(range.min, range.max);

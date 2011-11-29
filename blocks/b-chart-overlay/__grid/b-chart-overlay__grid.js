@@ -5,7 +5,7 @@
 BEM.decl('b-chart-overlay__grid', {
 
     layersRequest : function() {
-        return [{ xAxis: 0, yAxis: 0 }];
+        return [{ }];
     },
 
     draw : function(sched, layers) {
@@ -15,9 +15,12 @@ BEM.decl('b-chart-overlay__grid', {
             content = this.params.content,
             xAxis = content.xAxes[0],
             yAxis = content.yAxes[0],
+            canvas = layers[0].canvas,
             ctx = layers[0].ctx,
             f, ticks;
 
+        canvas.css('left', '0');
+        canvas.css('width', '100%');
         ctx.clearRect(0, 0, dim.width, dim.height);
 
         if (typeof ctx.mozDash !== 'undefined') {

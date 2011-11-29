@@ -11,8 +11,8 @@ BEM.decl('b-chart-overlay__render', {
 
         for (var i = 0, l = items.length; i < l; ++i) {
             request.push({
-                xAxis: items.xAxis,
-                yAxis: items.yAxis,
+                xAxis: items[i].xAxis,
+                yAxis: items[i].yAxis,
                 item: i
             });
         }
@@ -34,7 +34,6 @@ BEM.decl('b-chart-overlay__render', {
     },
 
     draw : function(sched, layers) {
-        console.log(sched, layers);
         this._run(sched, layers, 0);
     },
 
@@ -46,6 +45,7 @@ BEM.decl('b-chart-overlay__render', {
             item = content.items[itemNo],
             xAxis = content.xAxes[item.xAxis || 0] || content.xAxes[0],
             yAxis = content.yAxes[item.yAxis || 0] || content.yAxes[0],
+            canvas = layers[itemNo].canvas,
             ctx = layers[itemNo].ctx,
             xData = item.data.x,
             yData = item.data.y,
@@ -53,6 +53,8 @@ BEM.decl('b-chart-overlay__render', {
             yf = yAxis.scale.f,
             x, y;
 
+        canvas.css('left', '0');
+        canvas.css('width', '100%');
         ctx.clearRect(0, 0, dim.width, dim.height);
 
         ctx.strokeStyle = item.color || "#000";

@@ -62,9 +62,15 @@ BEM.decl('i-task-scheduler', {
         }
         if (context.id && this.byId[context.id]) {
             var task = this.byId[context.id];
+
+            if (!context.startTime && task.context.startTime) {
+                context.startTime = new Date(0);
+            }
+
             task.subtasks = subtasks.slice();
             task.context = context;
             task.reset = true;
+
             return;
         }
 

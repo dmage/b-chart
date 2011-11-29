@@ -53,3 +53,21 @@ body {
 {
     position: relative;
 }
+
+.b-chart__clipped-viewport
+{
+    bottom: 0;
+    left: 0;
+    overflow: hidden;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.b-chart__canvas
+{
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+}

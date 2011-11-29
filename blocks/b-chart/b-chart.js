@@ -249,6 +249,11 @@ BEM.DOM.decl('b-chart', {
             items = _this.content.items,
             range = xAxis.rangeProvider.get();
 
+        for (var i = 0, l = items.length; i < l; ++i) {
+            if (items[i].xAxis != xAxisNo) continue;
+            items._rendered = false;
+        }
+
         xAxis.scale.input(range.min, range.max);
         for (var i = 0, l = items.length; i < l; ++i) {
             if (items[i].xAxis != xAxisNo) continue;

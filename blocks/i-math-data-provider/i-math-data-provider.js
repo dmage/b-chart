@@ -27,7 +27,7 @@ BEM.decl('i-math-data-provider', {
     },
 
     range : function(begin, end) {
-        this.trigger('update');
+        //this.trigger('update');
     },
 
     sin : Math.sin,

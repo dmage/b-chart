@@ -24,10 +24,7 @@ block b-chart {
                             content: {
                                 elem: 'viewport',
                                 content: {
-                                    elem: 'clipped-viewport',
-                                    content: {
-                                        elem: 'canvas'
-                                    }
+                                    elem: 'clipped-viewport'
                                 }
                             }
                         }

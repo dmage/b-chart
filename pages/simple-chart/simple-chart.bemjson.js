@@ -86,6 +86,10 @@
                             step: 0.05
                         }
                     }
+                ],
+                overlays: [
+                    'b-chart-overlay__grid',
+                    'b-chart-overlay__render'
                 ]
             }
         }

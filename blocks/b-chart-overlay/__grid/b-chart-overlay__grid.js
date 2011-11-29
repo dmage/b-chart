@@ -4,14 +4,21 @@
 
 BEM.decl('b-chart-overlay__grid', {
 
-    draw : function(sched, ctx) {
+    layersRequest : function() {
+        return [{ xAxis: 0, yAxis: 0 }];
+    },
+
+    draw : function(sched, layers) {
         var dim = this.params.dimensions,
             width = dim.width,
             height = dim.height,
             content = this.params.content,
             xAxis = content.xAxes[0],
             yAxis = content.yAxes[0],
+            ctx = layers[0].ctx,
             f, ticks;
+
+        ctx.clearRect(0, 0, dim.width, dim.height);
 
         if (typeof ctx.mozDash !== 'undefined') {
             ctx.mozDash = [2, 4];

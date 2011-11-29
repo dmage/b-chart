@@ -22,7 +22,8 @@ BEM.DOM.decl('b-chart', {
                 title: false,
                 xAxes: false,
                 yAxes: false,
-                items: false
+                items: false,
+                overlays: false
             };
             _this._init = 0;
 
@@ -35,6 +36,8 @@ BEM.DOM.decl('b-chart', {
                 xAxes: [],
                 yAxes: [],
                 items: [],
+                overlays: [],
+                layers: []
             };
 
             _this.applySize();
@@ -46,8 +49,6 @@ BEM.DOM.decl('b-chart', {
                     id: _this._uniqId + ".resize"
                 });
             });
-
-            _this.setOverlays(); // FIXME move to callbacks
 
             var initCallbacks = {
                 title : function(title) {
@@ -61,6 +62,9 @@ BEM.DOM.decl('b-chart', {
                 },
                 items : function(items) {
                     _this.setItems(items);
+                },
+                overlays : function(overlays) {
+                    _this.setOverlays(overlays);
                 },
                 ping: function() {
                     _this.ping();
@@ -88,6 +92,8 @@ BEM.DOM.decl('b-chart', {
         if (this._init == 2 && initState.yAxes)
             this._init = 3;
         if (this._init == 3 && initState.items)
+            this._init = 4;
+        if (this._init == 4 && initState.overlays)
             this._init = -1; // -1 = finished.
 
         if (this._init == -1) {
@@ -120,36 +126,63 @@ BEM.DOM.decl('b-chart', {
         }
     },
 
-    setOverlays : function() {
+    _initOverlay : function(overlay) {
+        var _this = this,
+            layers = _this.content.layers,
+            request = overlay.layersRequest();
+
+        var localLayers = [];
+        for (var i = 0, l = request.length; i < l; ++i) {
+            var layer = request[i];
+
+            var $canvas = $(BEMHTML.apply([{
+                block: 'b-chart',
+                elem: 'canvas'
+            }]));
+            _this.elem('clipped-viewport').append($canvas);
+
+            layer.canvas = $canvas;
+            layer.ctx = layer.canvas.get(0).getContext('2d');
+
+            localLayers.push(layer);
+            layers.push(layer);
+        }
+
+        _this.renderTasks.push(function(sched) {
+            console.log(localLayers);
+            overlay.draw(sched, localLayers);
+        });
+    },
+
+    _initLayers : function() {
+        var _this = this,
+            overlays = _this.content.overlays;
+
+        _this.renderTasks = [];
+        for (var i = 0, l = overlays.length; i < l; ++i) {
+            _this._initOverlay(overlays[i]);
+        }
+    },
+
+    setOverlays : function(overlays) {
         var _this = this;
-        var canvas = this.elem('canvas').get(0);
-        // FIXME get overlays from settingsProvider
-        var _overlays = [
-            'b-chart-overlay__grid',
-            'b-chart-overlay__render'
-        ];
-        var _bemOverlays = [];
-        _this.overlayTasks = [
-            function(sched, ctx) {
-                if ($.browser.webkit) {
-                    canvas.width = canvas.width;
-                } else {
-                    ctx.clearRect(0, 0, _this.dimensions.width, _this.dimensions.height);
-                }
-                sched.next();
-            }
-        ];
-        for (var i = 0; i < _overlays.length; ++i) {
-            var bem = BEM.create(_overlays[i], {
+
+        _this.content.overlays = overlays;
+
+        for (var i = 0, l = _this.content.overlays.length; i < l; ++i) {
+            var overlay = _this.content.overlays[i];
+            _this.content.overlays[i] = BEM.create(overlay, {
                 dimensions: _this.dimensions,
                 content: _this.content
             });
-            (function(bem) {
-                _this.overlayTasks.push(function(sched, ctx) {
-                    bem.draw(sched, ctx);
-                });
-            })(bem);
         }
+
+        if (this._initState.items) {
+            this._initLayers();
+        }
+
+        this._initState.overlays = true;
+        this._updateInit();
     },
 
     setTitle : function(title) {
@@ -368,6 +401,10 @@ BEM.DOM.decl('b-chart', {
             _this._initItem(i);
         }
 
+        if (this._initState.layers) {
+            this._initLayers();
+        }
+
         _this._initState.items = true;
         _this._updateInit();
     },
@@ -409,7 +446,8 @@ BEM.DOM.decl('b-chart', {
     applySize : function(force) {
         var _this = this,
             xAxes = this.content.xAxes,
-            yAxes = this.content.yAxes;
+            yAxes = this.content.yAxes,
+            layers = this.content.layers;
 
         typeof force !== 'undefined' || (force = false);
 
@@ -426,9 +464,12 @@ BEM.DOM.decl('b-chart', {
         _this.dimensions.height = newHeight;
         _this.dimensions.width = newWidth;
 
-        _this.elem('canvas').attr('width', _this.dimensions.width);
-        _this.elem('canvas').attr('height', _this.dimensions.height);
         _this.elem('viewport').css('height', _this.dimensions.height + 'px');
+        for (var i = 0, l = layers.length; i < l; ++i) {
+            var layer = layers[i];
+            layer.canvas.attr('width', _this.dimensions.width);
+            layer.canvas.attr('height', _this.dimensions.height);
+        }
 
         for (var yAxisNo = 0, l = yAxes.length; yAxisNo < l; ++yAxisNo) {
             var yAxis = yAxes[yAxisNo];
@@ -462,13 +503,10 @@ BEM.DOM.decl('b-chart', {
             return;
         }
 
-        var _this = this,
-            ctx = _this.elem('canvas').get(0).getContext('2d');
-        taskScheduler.run(PRIO_UI, this.overlayTasks, {
-            args: [ctx],
-            id: _this._uniqId + ".draw",
+        taskScheduler.run(PRIO_UI, this.renderTasks, {
+            id: this._uniqId + ".draw",
             delay: delay,
-            mask: _this._itemsMask()
+            mask: this._itemsMask()
         });
     },
 
@@ -477,13 +515,10 @@ BEM.DOM.decl('b-chart', {
             return;
         }
 
-        var _this = this,
-            ctx = _this.elem('canvas').get(0).getContext('2d');
-        taskScheduler.update(PRIO_UI, this.overlayTasks, {
-            args: [ctx],
-            id: _this._uniqId + ".draw",
-            delay: _this.__self.waitNextData,
-            mask: _this._itemsMask()
+        taskScheduler.update(PRIO_UI, this.renderTasks, {
+            id: this._uniqId + ".draw",
+            delay: this.__self.waitNextData,
+            mask: this._itemsMask()
         }, feature);
     }
 

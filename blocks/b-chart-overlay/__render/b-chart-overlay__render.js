@@ -4,24 +4,41 @@
 
 BEM.decl('b-chart-overlay__render', {
 
-    _run : function(sched, ctx, itemNo) {
+    layersRequest : function() {
+        var content = this.params.content,
+            items = content.items,
+            request = [];
+
+        for (var i = 0, l = items.length; i < l; ++i) {
+            request.push({
+                xAxis: items.xAxis,
+                yAxis: items.yAxis,
+                item: i
+            });
+        }
+
+        return request;
+    },
+
+   _run : function(sched, layers, itemNo) {
         var _this = this,
             content = this.params.content;
 
         if (itemNo >= content.items.length) {
             return sched.next();
         } else {
-            sched.next(function(sched, ctx) {
-                _this.drawItem(sched, ctx, itemNo);
+            sched.next(function(sched) {
+                _this.drawItem(sched, layers, itemNo);
             });
         }
     },
 
-    draw : function(sched, ctx) {
-        this._run(sched, ctx, 0);
+    draw : function(sched, layers) {
+        console.log(sched, layers);
+        this._run(sched, layers, 0);
     },
 
-    drawItem : function(sched, ctx, itemNo) {
+    drawItem : function(sched, layers, itemNo) {
         var dim = this.params.dimensions,
             width = dim.width,
             height = dim.height,
@@ -29,11 +46,14 @@ BEM.decl('b-chart-overlay__render', {
             item = content.items[itemNo],
             xAxis = content.xAxes[item.xAxis || 0] || content.xAxes[0],
             yAxis = content.yAxes[item.yAxis || 0] || content.yAxes[0],
+            ctx = layers[itemNo].ctx,
             xData = item.data.x,
             yData = item.data.y,
             xf = xAxis.scale.f,
             yf = yAxis.scale.f,
             x, y;
+
+        ctx.clearRect(0, 0, dim.width, dim.height);
 
         ctx.strokeStyle = item.color || "#000";
         ctx.lineWidth = 1;
@@ -50,7 +70,7 @@ BEM.decl('b-chart-overlay__render', {
 
         ctx.stroke();
 
-        this._run(sched, ctx, itemNo + 1);
+        this._run(sched, layers, itemNo + 1);
     }
 
 });

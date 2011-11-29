@@ -191,7 +191,6 @@ BEM.DOM.decl('b-chart', {
 
             this.scale = BEM.create('b-scale__linear');
             this.scale.input(-1, 1); // FIXME
-            this.ticks = this.scale.ticks(5, 5);
         }
 
         var yAxesLeft = _this._getYAxes('left');
@@ -251,7 +250,6 @@ BEM.DOM.decl('b-chart', {
             range = xAxis.rangeProvider.get();
 
         xAxis.scale.input(range.min, range.max);
-        xAxis.ticks = xAxis.scale.ticks(Math.floor(_this.dimensions.width / 50));
         for (var i = 0, l = items.length; i < l; ++i) {
             if (items[i].xAxis != xAxisNo) continue;
             _this._updateItemData(items[i]);
@@ -263,6 +261,8 @@ BEM.DOM.decl('b-chart', {
             if (items[i].xAxis != xAxisNo) continue;
             _this._requestItemData(items[i]);
         }
+
+        _this._renderXAxis(xAxisNo);
     },
 
     setXAxes : function(xAxes) {
@@ -371,6 +371,8 @@ BEM.DOM.decl('b-chart', {
         var _this = this,
             yAxis = this.content.yAxes[yAxisNo];
 
+        yAxis.ticks = yAxis.scale.ticks(5, 5);
+
         var ticks = [];
         for (var i = 0; i < yAxis.ticks.length; ++i) {
             var tickValue = yAxis.ticks[i];
@@ -385,6 +387,8 @@ BEM.DOM.decl('b-chart', {
     _renderXAxis : function(xAxisNo) {
         var _this = this,
             xAxis = this.content.xAxes[xAxisNo];
+
+        xAxis.ticks = xAxis.scale.ticks(Math.floor(_this.dimensions.width / 50));
 
         var ticks = [];
         for (var i = 0; i < xAxis.ticks.length; ++i) {

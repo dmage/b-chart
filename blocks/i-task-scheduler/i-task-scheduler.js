@@ -37,6 +37,15 @@ BEM.decl('i-task-scheduler', {
         return prioBlock;
     },
 
+    _maskReady : function(mask) {
+        for (var i = 0, l = mask.length; i < l; ++i) {
+            if (!mask[i]) {
+                return false;
+            }
+        }
+        return true;
+    },
+
     run : function(prio, subtasks, context, feature) {
         context = context || {};
         if (context.delay) {
@@ -45,6 +54,9 @@ BEM.decl('i-task-scheduler', {
                 context.mask = new Array(context.features);
                 if (typeof feature !== 'undefined') {
                     context.mask[feature] = true;
+                }
+                if (this._maskReady(context.mask)) {
+                    context.startTime = new Date(0);
                 }
             }
         }
@@ -87,21 +99,22 @@ BEM.decl('i-task-scheduler', {
         if (context.id && this.byId[context.id]) {
             var task = this.byId[context.id];
             var mask = task.context.mask;
+            var resetTimer = false;
 
             task.context = context;
             if (mask && typeof feature !== 'undefined') {
                 mask[feature] = true;
-                var ready = true;
-                for (var i = 0, l = mask.length; i < l; ++i) {
-                    var ready = ready && mask[i];
-                    if (!ready) break;
-                }
-                if (ready) {
+                if (this._maskReady(context.mask)) {
                     task.context.startTime = new Date(0);
+                    var resetTimer = true;
                 }
             }
 
             task.context.mask = mask;
+
+            if (resetTimer && this.currentTask === null) {
+                this.waitForNextTask();
+            }
         } else {
             this.run(prio, subtasks, context, feature);
         }

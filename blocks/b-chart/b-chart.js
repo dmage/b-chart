@@ -9,11 +9,6 @@ var taskScheduler = BEM.blocks['i-task-scheduler'].instance;
 
 BEM.DOM.decl('b-chart', {
 
-    _getXAxes : function(pos) {
-        var axes = this.content.xAxes || [];
-        return axes.filter(function(axis) { return axis.pos == pos; });
-    },
-
     _getYAxes : function(pos) {
         var axes = this.content.yAxes || [];
         return axes.filter(function(axis) { return axis.pos == pos; });
@@ -23,59 +18,52 @@ BEM.DOM.decl('b-chart', {
         'js' : function() {
             var _this = this;
 
+            _this._initState = {
+                title: false,
+                xAxes: false,
+                yAxes: false,
+                items: false
+            };
+            _this._init = 0;
+
             _this.dimensions = {
                 width: 0,
                 height: 0
             };
+
             _this.content = {
                 xAxes: [],
                 yAxes: [],
                 items: [],
             };
 
-            var initState = {
-                title: false,
-                xAxes: false,
-                yAxes: false,
-                items: false
-            };
+            _this.applySize();
+            _this.bindToWin('resize', function() {
+                taskScheduler.run(PRIO_SYSTEM, [function(sched) {
+                    _this.applySize();
+                    sched.next();
+                }], {
+                    id: _this._uniqId + ".resize"
+                });
+            });
 
-            var initCheck = function() {
-                var inited = initState.title &&
-                    initState.xAxes &&
-                    initState.yAxes &&
-                    initState.items;
-
-                if (inited) {
-                    _this.ping(false); // send last ping and disable busy timer
-                    _this.inited();
-                }
-            }
+            _this.setOverlays(); // FIXME move to callbacks
 
             var initCallbacks = {
                 title : function(title) {
-                    initState.title = true;
                     _this.setTitle(title);
-                    initCheck();
                 },
                 xAxes : function(xAxes) {
-                    initState.xAxes = true;
                     _this.setXAxes(xAxes);
-                    initCheck();
                 },
                 yAxes : function(yAxes) {
-                    initState.yAxes = true;
                     _this.setYAxes(yAxes);
-                    initCheck();
                 },
                 items : function(items) {
-                    initState.items = true;
                     _this.setItems(items);
-                    initCheck();
                 },
                 ping: function() {
                     _this.ping();
-                    initCheck();
                 }
             };
 
@@ -85,6 +73,26 @@ BEM.DOM.decl('b-chart', {
 
             this.ping();
             settingsProvider.get(initCallbacks);
+        }
+    },
+
+    _updateInit : function() {
+        if (this._init == -1)
+            return;
+
+        var initState = this._initState;
+        if (this._init == 0 && initState.title)
+            this._init = 1;
+        if (this._init == 1 && initState.xAxes)
+            this._init = 2;
+        if (this._init == 2 && initState.yAxes)
+            this._init = 3;
+        if (this._init == 3 && initState.items)
+            this._init = -1; // -1 = finished.
+
+        if (this._init == -1) {
+            this.ping(false); // send last ping and disable busy timer
+            this.applySize(true);
         }
     },
 
@@ -112,8 +120,43 @@ BEM.DOM.decl('b-chart', {
         }
     },
 
+    setOverlays : function() {
+        var _this = this;
+        var canvas = this.elem('canvas').get(0);
+        // FIXME get overlays from settingsProvider
+        var _overlays = [
+            'b-chart-overlay__grid',
+            'b-chart-overlay__render'
+        ];
+        var _bemOverlays = [];
+        _this.overlayTasks = [
+            function(sched, ctx) {
+                if ($.browser.webkit) {
+                    canvas.width = canvas.width;
+                } else {
+                    ctx.clearRect(0, 0, _this.dimensions.width, _this.dimensions.height);
+                }
+                sched.next();
+            }
+        ];
+        for (var i = 0; i < _overlays.length; ++i) {
+            var bem = BEM.create(_overlays[i], {
+                dimensions: _this.dimensions,
+                content: _this.content
+            });
+            (function(bem) {
+                _this.overlayTasks.push(function(sched, ctx) {
+                    bem.draw(sched, ctx);
+                });
+            })(bem);
+        }
+    },
+
     setTitle : function(title) {
         this.elem('title').text(title);
+
+        this._initState.title = true;
+        this._updateInit();
     },
 
     _destroyYAxes : function() {
@@ -122,8 +165,10 @@ BEM.DOM.decl('b-chart', {
         _this.content.yAxes && $.each(_this.content.yAxes, function() {
             this.block && BEM.DOM.destruct(this.block.domElem);
         });
+
         BEM.DOM.destruct(_this.findElem('cell', 'h', 'left'));
         BEM.DOM.destruct(_this.findElem('cell', 'h', 'right'));
+
         delete _this.content.yAxes;
     },
 
@@ -146,6 +191,7 @@ BEM.DOM.decl('b-chart', {
 
             this.scale = BEM.create('b-scale__linear');
             this.scale.input(-1, 1); // FIXME
+            this.ticks = this.scale.ticks(5, 5);
         }
 
         var yAxesLeft = _this._getYAxes('left');
@@ -163,6 +209,9 @@ BEM.DOM.decl('b-chart', {
         });
 
         // FIXME add gap to X axes
+
+        _this._initState.yAxes = true;
+        _this._updateInit();
     },
 
     _destroyXAxes : function() {
@@ -171,6 +220,9 @@ BEM.DOM.decl('b-chart', {
         _this.content.xAxes && $.each(_this.content.xAxes, function() {
             this.domElem && this.domElem.remove();
         });
+
+        // FIXME cleanup (see _destoryYAxes)
+
         delete _this.content.xAxes;
     },
 
@@ -180,43 +232,36 @@ BEM.DOM.decl('b-chart', {
 
         xAxis.block = $('.b-axis', domElem).bem('b-axis');
 
+        xAxis.scale = BEM.create('b-scale__linear');
+
         xAxis.rangeProvider = BEM.create(
             xAxis.rangeProvider.name,
             xAxis.rangeProvider);
-        xAxis.scale = BEM.create('b-scale__linear');
-
         xAxis.rangeProvider.on('update', function(e) {
-            _this._updateXAxis(xAxisNo);
-            _this.render();
+            _this._updateXAxisRange(xAxisNo);
         });
 
-        // FIXME useless, already sets in _updateXAxis
-        var range = xAxis.rangeProvider.get();
-        xAxis.scale.input(range.min, range.max);
+        _this._updateXAxisRange(xAxisNo);
     },
 
-    _updateXAxis : function(xAxisNo) {
+    _updateXAxisRange : function(xAxisNo) {
         var _this = this,
-            xAxis = this.content.xAxes[xAxisNo],
-            items = this.content.items;
+            xAxis = _this.content.xAxes[xAxisNo],
+            items = _this.content.items,
+            range = xAxis.rangeProvider.get();
 
-        var range = xAxis.rangeProvider.get();
         xAxis.scale.input(range.min, range.max);
         xAxis.ticks = xAxis.scale.ticks(Math.floor(_this.dimensions.width / 50));
-
-        var ticks = [];
-        for (var i = 0; i < xAxis.ticks.length; ++i) {
-            var tickValue = xAxis.ticks[i];
-            ticks.push({
-                offset: Math.round(xAxis.scale.f(tickValue)),
-                label: (""+tickValue).substr(-6) // FIXME
-            });
-        }
-        xAxis.block.update(ticks);
-
         for (var i = 0, l = items.length; i < l; ++i) {
             if (items[i].xAxis != xAxisNo) continue;
-            items[i].data = items[i].dataProvider.get(xAxis.scale.inputMin, xAxis.scale.inputMax);
+            _this._updateItemData(items[i]);
+        }
+        if (_this._init == -1) {
+            _this.render(_this.__self.waitFirstData);
+        }
+        for (var i = 0, l = items.length; i < l; ++i) {
+            if (items[i].xAxis != xAxisNo) continue;
+            _this._requestItemData(items[i]);
         }
     },
 
@@ -230,32 +275,30 @@ BEM.DOM.decl('b-chart', {
         var yAxesRightCount = _this._getYAxes('right').length;
 
         function createDomElem() {
-            var leftGap = "";
-            for (var i = 0; i < yAxesLeftCount; ++i) {
-                leftGap += BEMHTML.apply([{
-                    block: 'b-chart',
-                    elem: 'cell',
-                    elemMods: { h: 'left', v: this.pos }
-                }]);
-            }
-            var rightGap = "";
-            for (var i = 0; i < yAxesRightCount; ++i) {
-                rightGap += BEMHTML.apply([{
-                    block: 'b-chart',
-                    elem: 'cell',
-                    elemMods: { h: 'right', v: this.pos }
-                }]);
-            }
-            var content = BEMHTML.apply([{
-                block: 'b-chart',
+            var content = [{
                 elem: 'axis',
                 elemMods: { pos: this.pos }
-            }]);
+            }];
+
+            for (var i = 0; i < yAxesLeftCount; ++i) {
+                content.unshift({
+                    elem: 'cell',
+                    elemMods: { h: 'left', v: this.pos }
+                });
+            }
+
+            for (var i = 0; i < yAxesRightCount; ++i) {
+                content.push({
+                    elem: 'cell',
+                    elemMods: { h: 'right', v: this.pos }
+                });
+            }
+
             return $(BEMHTML.apply([{
                 block: 'b-chart',
                 elem: 'row',
                 elemMods: { v: this.pos },
-                content: leftGap + content + rightGap
+                content: content
             }]));
         }
 
@@ -273,121 +316,173 @@ BEM.DOM.decl('b-chart', {
 
             _this._initXAxis(xAxisNo, domElem);
         }
+
+        _this._initState.xAxes = true;
+        _this._updateInit();
+    },
+
+    _initItem : function(itemNo) {
+        var _this = this,
+            item = _this.content.items[itemNo];
+
+        item.dataProvider = BEM.create(
+            item.dataProvider.name,
+            item.dataProvider
+        );
+        item.dataProvider.on('update', function(e) {
+            item.ready = true;
+            _this.itemReady(itemNo);
+        });
+
+        if (_this.content.xAxes) {
+            _this._updateItemData(item);
+            _this._requestItemData(item);
+        }
+    },
+
+    _updateItemData : function(item) {
+        var _this = this,
+            xAxis = _this.content.xAxes[item.xAxis || 0] || _this.content.xAxes[0];
+
+        item.data = item.dataProvider.get(xAxis.scale.inputMin, xAxis.scale.inputMax);
+    },
+
+    _requestItemData : function(item) {
+        var _this = this,
+            xAxis = _this.content.xAxes[item.xAxis || 0] || _this.content.xAxes[0];
+
+        item.ready = false;
+        item.dataProvider.range(xAxis.scale.inputMin, xAxis.scale.inputMax);
     },
 
     setItems : function(items) {
         var _this = this;
 
         _this.content.items = items;
-
-        function initItem() {
-            // FIXME
-            this.dataProvider = BEM.create(
-                this.dataProvider.name,
-                this.dataProvider
-            );
-
-            // FIXME
-            var xAxis = _this.content.xAxes[this.xAxis || 0] || _this.content.xAxes[0];
-            var yAxis = _this.content.yAxes[this.yAxis || 0] || _this.content.yAxes[0];
-            this.data = this.dataProvider.get(xAxis.scale.inputMin, xAxis.scale.inputMax);
+        for (var i = 0, l = _this.content.items.length; i < l; ++i) {
+            _this._initItem(i);
         }
 
-        $.each(_this.content.items, initItem);
+        _this._initState.items = true;
+        _this._updateInit();
     },
 
-    inited : function() {
-        var _this = this;
-        var canvas = this.elem('canvas').get(0);
-
-        // FIXME get overlays from settingsProvider
-        var _overlays = [
-            'b-chart-overlay__grid',
-            'b-chart-overlay__render'
-        ];
-        var _bemOverlays = [];
-        _this.overlayTasks = [
-            function(sched, ctx) {
-                if ($.browser.webkit) {
-                    canvas.width = canvas.width;
-                } else {
-                    ctx.clearRect(0, 0, _this.dimensions.width, _this.dimensions.height);
-                }
-                sched.next();
-            }
-        ];
-        $.each(_overlays, function() {
-            var bem = BEM.create(this, {
-                dimensions: _this.dimensions,
-                content: _this.content
-            });
-            _bemOverlays.push(bem);
-            _this.overlayTasks.push(function(sched, ctx) {
-                bem.draw(sched, ctx);
-            });
-        });
-
-        _this.applySize();
-        _this.bindToWin('resize', function() {
-            taskScheduler.run(PRIO_SYSTEM, [function(sched) {
-                _this.applySize();
-                sched.next();
-            }], {
-                id: _this._uniqId + ".resize"
-            });
-        });
-    },
-
-    applySize : function() {
+    _renderYAxis : function(yAxisNo) {
         var _this = this,
-            xAxes = this.content.xAxes;
+            yAxis = this.content.yAxes[yAxisNo];
 
-        this.dimensions.height = 200;
-        this.dimensions.width = _this.elem('viewport').width();
+        var ticks = [];
+        for (var i = 0; i < yAxis.ticks.length; ++i) {
+            var tickValue = yAxis.ticks[i];
+            ticks.push({
+                offset: _this.dimensions.height - Math.round(yAxis.scale.f(tickValue)) - 1,
+                label: tickValue
+            });
+        }
+        yAxis.block.update(ticks);
+    },
 
-        this.elem('canvas').attr('width', this.dimensions.width);
-        this.elem('canvas').attr('height', this.dimensions.height);
-        this.elem('viewport').css('height', this.dimensions.height + 'px');
+    _renderXAxis : function(xAxisNo) {
+        var _this = this,
+            xAxis = this.content.xAxes[xAxisNo];
 
-        $.each(_this.content.yAxes, function() {
-            this.scale.output(0, _this.dimensions.height - 1);
-            this.ticks = this.scale.ticks(5, 5);
-            this.block.domElem.css('height', _this.dimensions.height + 'px');
+        var ticks = [];
+        for (var i = 0; i < xAxis.ticks.length; ++i) {
+            var tickValue = xAxis.ticks[i];
+            ticks.push({
+                offset: Math.round(xAxis.scale.f(tickValue)),
+                label: (""+tickValue).substr(-6) // FIXME
+            });
+        }
+        xAxis.block.update(ticks);
+    },
 
-            var ticks = [];
-            for (var i = 0; i < this.ticks.length; ++i) {
-                var tickValue = this.ticks[i];
-                ticks.push({
-                    offset: _this.dimensions.height - Math.round(this.scale.f(tickValue)) - 1,
-                    label: tickValue
-                });
+    applySize : function(force) {
+        var _this = this,
+            xAxes = this.content.xAxes,
+            yAxes = this.content.yAxes;
+
+        typeof force !== 'undefined' || (force = false);
+
+        var newHeight = 200,
+            newWidth = _this.elem('viewport').width();
+        if (_this.dimensions.height == newHeight &&
+            _this.dimensions.width == newWidth)
+        {
+            if (force) {
+                _this.render();
             }
-            this.block.update(ticks);
-        });
+            return; // nothing changed
+        }
+        _this.dimensions.height = newHeight;
+        _this.dimensions.width = newWidth;
+
+        _this.elem('canvas').attr('width', _this.dimensions.width);
+        _this.elem('canvas').attr('height', _this.dimensions.height);
+        _this.elem('viewport').css('height', _this.dimensions.height + 'px');
+
+        for (var yAxisNo = 0, l = yAxes.length; yAxisNo < l; ++yAxisNo) {
+            var yAxis = yAxes[yAxisNo];
+            yAxis.scale.output(0, _this.dimensions.height - 1);
+            yAxis.block.domElem.css('height', _this.dimensions.height + 'px');
+            _this._renderYAxis(yAxisNo);
+        }
 
         for (var xAxisNo = 0, l = xAxes.length; xAxisNo < l; ++xAxisNo) {
             var xAxis = xAxes[xAxisNo];
             xAxis.scale.output(0, _this.dimensions.width - 1);
             xAxis.block.domElem.css('width', _this.dimensions.width + 'px');
-            _this._updateXAxis(xAxisNo);
+            _this._renderXAxis(xAxisNo);
         }
 
-        this.render();
+        _this.render();
     },
 
-    render : function() {
-        var _this = this;
+    _itemsMask : function() {
+        var _this = this,
+            items = _this.content.items,
+            mask = new Array(items.length);
+        for (var i = 0, l = items.length; i < l; ++i) {
+            mask[i] = items[i].ready;
+        }
+        return mask;
+    },
 
-        var ctx = _this.elem('canvas').get(0).getContext('2d');
+    render : function(delay) {
+        if (this._init != -1) {
+            return;
+        }
+
+        var _this = this,
+            ctx = _this.elem('canvas').get(0).getContext('2d');
         taskScheduler.run(PRIO_UI, this.overlayTasks, {
             args: [ctx],
-            id: _this._uniqId + ".draw"
+            id: _this._uniqId + ".draw",
+            delay: delay,
+            mask: _this._itemsMask()
         });
+    },
+
+    itemReady : function(feature) {
+        if (this._init != -1) {
+            return;
+        }
+
+        var _this = this,
+            ctx = _this.elem('canvas').get(0).getContext('2d');
+        taskScheduler.update(PRIO_UI, this.overlayTasks, {
+            args: [ctx],
+            id: _this._uniqId + ".draw",
+            delay: _this.__self.waitNextData,
+            mask: _this._itemsMask()
+        }, feature);
     }
 
 }, {
 
-    busyDelay : 2500
+    busyDelay : 2500,
+    waitFirstData: 2000,
+    waitNextData: 200
 
 });
 

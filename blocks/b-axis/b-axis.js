@@ -10,11 +10,11 @@ BEM.DOM.decl('b-axis', {
             top: 'left', bottom: 'left'
         };
 
-        var content = "";
+        var content = [];
         var offset = offsets[this.getMod('pos')] || 'top';
         for (var i = 0; i < ticks.length; ++i) {
             var tick = ticks[i];
-            content += BEMHTML.apply([{
+            content.push({
                 block: 'b-axis',
                 elem: 'value',
                 attrs: { style: offset + ':' + tick.offset + 'px' },
@@ -22,9 +22,10 @@ BEM.DOM.decl('b-axis', {
                     { elem: 'label', content: tick.label },
                     { elem: 'tick' }
                 ]
-            }]);
+            });
         }
-        this.domElem.empty().append(content);
+        content = BEMHTML.apply(content);
+        this.domElem.html(content);
     }
 
 });

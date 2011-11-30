@@ -61,7 +61,7 @@
                         dataProvider: {
                             name: 'i-math-data-provider',
                             func: 'sin',
-                            step: 0.05
+                            step: 0.02
                         }
                     },
                     {
@@ -72,7 +72,7 @@
                         dataProvider: {
                             name: 'i-math-data-provider',
                             func: 'cos',
-                            step: 0.05
+                            step: 0.02
                         }
                     },
                     {

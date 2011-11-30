@@ -269,7 +269,11 @@ BEM.DOM.decl('b-chart', {
             xAxis.rangeProvider.name,
             xAxis.rangeProvider);
         xAxis.rangeProvider.on('update', function(e) {
-            _this._updateXAxisRange(xAxisNo);
+            // shift canvases in new scheduler cycle (prevent flickering)
+            taskScheduler.run(PRIO_SYSTEM, [function(sched) {
+                _this._updateXAxisRange(xAxisNo);
+                sched.next();
+            }]);
         });
 
         _this._updateXAxisRange(xAxisNo);
@@ -285,17 +289,19 @@ BEM.DOM.decl('b-chart', {
 
         for (var i = 0, l = items.length; i < l; ++i) {
             if (items[i].xAxis != xAxisNo) continue;
-            items._rendered = false;
+            items[i]._rendered = false;
         }
 
         var factor = (scale.outputMax - scale.outputMin)/(scale.inputMax - scale.inputMin);
         var delta = range.min - scale.inputMin;
         for (var i = 0, l = layers.length; i < l; ++i) {
-            // FIXME sum shifts
-            // FIXME support factor update
             var layer = layers[i];
             if (layer.xAxis != xAxisNo) continue;
-            layer.canvas.css('left', -Math.round(delta*factor) + 'px');
+
+            // FIXME sum shifts
+            // FIXME support factor update
+            var offset = layer.canvas.position();
+            layer.canvas.css('left', -Math.round(delta*factor) + offset.left + 'px');
         }
 
         xAxis.scale.input(range.min, range.max);
@@ -379,8 +385,7 @@ BEM.DOM.decl('b-chart', {
             item.dataProvider
         );
         item.dataProvider.on('update', function(e) {
-            item.ready = true;
-            _this.itemReady(itemNo);
+            _this._updateItem(itemNo);
         });
 
         if (_this.content.xAxes) {
@@ -389,11 +394,21 @@ BEM.DOM.decl('b-chart', {
         }
     },
 
+    _updateItem : function(itemNo) {
+        var _this = this,
+            item = _this.content.items[itemNo];
+
+        _this._updateItemData(item);
+        item.ready = true;
+        _this.renderItem(itemNo);
+    },
+
     _updateItemData : function(item) {
         var _this = this,
             xAxis = _this.content.xAxes[item.xAxis || 0] || _this.content.xAxes[0];
 
         item.data = item.dataProvider.get(xAxis.scale.inputMin, xAxis.scale.inputMax);
+        item._rendered = false;
     },
 
     _requestItemData : function(item) {
@@ -521,7 +536,7 @@ BEM.DOM.decl('b-chart', {
         });
     },
 
-    itemReady : function(feature) {
+    renderItem : function(itemNo) {
         if (this._init != -1) {
             return;
         }
@@ -530,7 +545,7 @@ BEM.DOM.decl('b-chart', {
             id: this._uniqId + ".draw",
             delay: this.__self.waitNextData,
             mask: this._itemsMask()
-        }, feature);
+        }, itemNo);
     }
 
 }, {

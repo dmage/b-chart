@@ -22,10 +22,13 @@ BEM.decl('b-chart-overlay__render', {
 
    _run : function(sched, layers, itemNo) {
         var _this = this,
-            content = this.params.content;
+            content = this.params.content,
+            items = content.items;
 
-        if (itemNo >= content.items.length) {
+        if (itemNo >= items.length) {
             return sched.next();
+        } else if (items[itemNo]._rendered) {
+            _this._run(sched, layers, itemNo + 1);
         } else {
             sched.next(function(sched) {
                 _this.drawItem(sched, layers, itemNo);
@@ -53,9 +56,9 @@ BEM.decl('b-chart-overlay__render', {
             yf = yAxis.scale.f,
             x, y;
 
+        ctx.clearRect(0, 0, dim.width, dim.height);
         canvas.css('left', '0');
         canvas.css('width', '100%');
-        ctx.clearRect(0, 0, dim.width, dim.height);
 
         ctx.strokeStyle = item.color || "#000";
         ctx.lineWidth = 1;

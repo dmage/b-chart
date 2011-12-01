@@ -494,9 +494,10 @@ BEM.DOM.decl('b-chart', {
 
     applySize : function(force) {
         var _this = this,
-            xAxes = this.content.xAxes,
-            yAxes = this.content.yAxes,
-            layers = this.content.layers;
+            xAxes = _this.content.xAxes,
+            yAxes = _this.content.yAxes,
+            layers = _this.content.layers,
+            items = _this.content.items;
 
         typeof force !== 'undefined' || (force = false);
 
@@ -532,6 +533,11 @@ BEM.DOM.decl('b-chart', {
             xAxis.scale.output(0, _this.dimensions.width - 1);
             xAxis.block.domElem.css('width', _this.dimensions.width + 'px');
             _this._renderXAxis(xAxisNo);
+        }
+
+        for (var i = 0, l = items.length; i < l; ++i) {
+            var item = items[i];
+            item._rendered = false;
         }
 
         _this.render();

@@ -1,6 +1,6 @@
 /** @requires BEM */
 
-(function() {
+(function($) {
 
 BEM.decl('b-chart-overlay__render', {
 
@@ -54,8 +54,10 @@ BEM.decl('b-chart-overlay__render', {
             yData = item.data.y,
             xf = xAxis.scale.f,
             yf = yAxis.scale.f,
-            x, y;
+            x, y,
+            mozilla = $.browser.mozilla;
 
+        console.time('render ' + itemNo);
         ctx.clearRect(0, 0, dim.width, dim.height);
         canvas.css('left', '0');
         canvas.css('width', '100%');
@@ -68,16 +70,29 @@ BEM.decl('b-chart-overlay__render', {
         y = height - (yf(yData[0]) + 0.5);
         ctx.moveTo(x, y);
         for (var l = xData.length, i = 1; i < l; ++i) {
+            if (mozilla && i % 2000 == 0) {
+                // restart line every 2000 points
+                // it gives a bit different result, but much faster on Linux
+                ctx.stroke();
+                ctx.beginPath();
+
+                x = (xf(xData[i - 1]) + 0.5);
+                y = height - (yf(yData[i - 1]) + 0.5);
+                ctx.moveTo(x, y);
+            }
             x = (xf(xData[i]) + 0.5);
             y = height - (yf(yData[i]) + 0.5);
             ctx.lineTo(x, y);
         }
 
         ctx.stroke();
+        console.timeEnd('render ' + itemNo);
+
+        item._rendered = true;
 
         this._run(sched, layers, itemNo + 1);
     }
 
 });
 
-})();
+})(jQuery);

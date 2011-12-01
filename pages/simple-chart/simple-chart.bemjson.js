@@ -27,7 +27,7 @@
                         rangeProvider: {
                             name: 'i-time-range-provider',
                             period: 50,
-                            updateInterval: 5000
+                            updateInterval: 2000
                         }
                     },
                     {
@@ -57,12 +57,19 @@
                         name: 'sin(x)',
                         xAxis: 0,
                         yAxis: 0,
-                        color: '#393',
+                        color: 'rgba(50,200,50,0.7)',
                         dataProvider: {
                             name: 'i-math-data-provider',
                             func: 'sin',
-                            step: 0.02
-                        }
+                            step: 0.002
+                        },
+                        filters: [
+                            {
+                                name: 'b-chart-filter__threshold',
+                                min: -0.8,
+                                max: 0.8
+                            }
+                        ]
                     },
                     {
                         name: 'cos(x)',
@@ -72,14 +79,14 @@
                         dataProvider: {
                             name: 'i-math-data-provider',
                             func: 'cos',
-                            step: 0.02
+                            step: 0.002
                         }
                     },
                     {
                         name: 'sin(x), axis #2',
                         xAxis: 1,
                         yAxis: 0,
-                        color: '#cc3',
+                        color: 'rgba(240,50,50,0.2)',
                         dataProvider: {
                             name: 'i-math-data-provider',
                             func: 'sin',

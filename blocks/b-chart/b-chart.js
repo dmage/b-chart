@@ -388,6 +388,14 @@ BEM.DOM.decl('b-chart', {
             _this._updateItem(itemNo);
         });
 
+        item.filters || (item.filters = []);
+        for (var i = 0, l = item.filters.length; i < l; ++i) {
+            item.filters[i] = BEM.create(
+                item.filters[i].name,
+                item.filters[i]
+            );
+        }
+
         if (_this.content.xAxes) {
             _this._updateItemData(item);
             _this._requestItemData(item);
@@ -405,9 +413,24 @@ BEM.DOM.decl('b-chart', {
 
     _updateItemData : function(item) {
         var _this = this,
-            xAxis = _this.content.xAxes[item.xAxis || 0] || _this.content.xAxes[0];
+            xAxis = _this.content.xAxes[item.xAxis || 0] || _this.content.xAxes[0],
+            filters = item.filters;
 
-        item.data = item.dataProvider.get(xAxis.scale.inputMin, xAxis.scale.inputMax);
+        item.rawData = item.dataProvider.get(xAxis.scale.inputMin, xAxis.scale.inputMax);
+
+        console.time('filter');
+        var data = {};
+        $.each(item.rawData, function(name, arr) {
+            data[name] = arr.slice();
+        });
+        for (var i = 0, l = filters.length; i < l; ++i) {
+            data = filters[i].run(item, data);
+        }
+        item.data = data;
+        console.timeEnd('filter');
+
+        item.renderData = null;
+
         item._rendered = false;
     },
 

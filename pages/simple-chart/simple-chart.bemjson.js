@@ -105,8 +105,8 @@
                     }
                 ],
                 overlays: [
-                    'b-chart-overlay__grid',
-                    'b-chart-overlay__render'
+                    { name: 'b-chart-overlay__grid' },
+                    { name: 'b-chart-overlay__render' }
                 ]
             }
         }

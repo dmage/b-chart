@@ -160,12 +160,16 @@ BEM.DOM.decl('b-chart', {
 
         _this.renderTasks = [];
         _this.renderTasks.push(function(sched) {
-            _this.runProcessors();
+            _this._runProcessors();
             sched.next();
         });
         for (var i = 0, l = overlays.length; i < l; ++i) {
             _this._initOverlay(overlays[i]);
         }
+        _this.renderTasks.push(function(sched) {
+            _this._finishRender();
+            sched.next();
+        });
     },
 
     setOverlays : function(overlays) {
@@ -175,11 +179,12 @@ BEM.DOM.decl('b-chart', {
 
         for (var i = 0, l = _this.content.overlays.length; i < l; ++i) {
             var overlay = _this.content.overlays[i];
-            // FIXME respect overlays params
-            _this.content.overlays[i] = BEM.create(overlay, {
-                dimensions: _this.dimensions,
-                content: _this.content
-            });
+            overlay.dimensions = _this.dimensions;
+            overlay.content = _this.content;
+            _this.content.overlays[i] = BEM.create(
+                overlay.name,
+                overlay
+            );
         }
 
         if (this._initState.items) {
@@ -225,13 +230,12 @@ BEM.DOM.decl('b-chart', {
 
         typeof yAxis.filters !== 'undefined' || (yAxis.filters = []);
         for (var i = 0, l = yAxis.filters.length; i < l; ++i) {
+            var filter = yAxis.filters[i];
+            filter.dimensions = _this.dimensions;
+            filter.content = _this.content;
             yAxis.filters[i] = BEM.create(
-                yAxis.filters[i].name,
-                // FIXME respect filters params
-                {
-                    dimensions: _this.dimensions,
-                    content: _this.content
-                }
+                filter.name,
+                filter
             );
         }
     },
@@ -594,7 +598,7 @@ BEM.DOM.decl('b-chart', {
         return mask;
     },
 
-    runProcessors : function() {
+    _runProcessors : function() {
         var _this = this,
             yAxes = _this.content.yAxes,
             items = _this.content.items;
@@ -617,6 +621,15 @@ BEM.DOM.decl('b-chart', {
             }
 
             _this._updateYAxisRange(yAxisNo, range);
+        }
+    },
+
+    _finishRender : function() {
+        var _this = this,
+            items = _this.content.items;
+
+        for (var i = 0, l = items.length; i < l; ++i) {
+            items[i]._rendered = true;
         }
     },
 

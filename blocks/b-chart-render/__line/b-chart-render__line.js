@@ -18,38 +18,65 @@ BEM.decl('b-chart-render__line', {
             yData = item.renderData.y,
             xf = xAxis.scale.f,
             yf = yAxis.scale.f,
-            x, y,
+            x, y, prev,
+            i, l, dots,
             mozilla = $.browser.mozilla;
 
         console.time('render ' + itemNo);
+
         ctx.clearRect(0, 0, dim.width, dim.height);
         canvas.css('left', '0');
         canvas.css('width', '100%');
 
         ctx.strokeStyle = item.color || "#000";
         ctx.lineWidth = 1;
-        ctx.beginPath();
 
-        x = (xf(xData[0]) + 0.5);
-        y = height - (yf(yData[0]) + 0.5);
-        ctx.moveTo(x, y);
-        for (var l = xData.length, i = 1; i < l; ++i) {
-            if (mozilla && i % 2000 == 0) {
+        i = 0;
+        l = xData.length;
+        dots = 0;
+        prev = null;
+        while (i < l) {
+            if (yData[i] === null) {
+                if (dots > 0) {
+                    ctx.stroke();
+                }
+                ++i;
+                dots = 0;
+                prev = null;
+                continue;
+            }
+
+            if (prev === null) {
+                ctx.beginPath();
+
+                x = (xf(xData[i]) + 0.5);
+                y = height - (yf(yData[i]) + 0.5);
+                ctx.moveTo(x, y);
+            } else {
+                x = (xf(xData[i]) + 0.5);
+                y = height - (yf(yData[i]) + 0.5);
+                ctx.lineTo(x, y);
+            }
+
+            ++dots;
+            if (dots == 2000) {
                 // restart line every 2000 points
                 // it gives a bit different result, but much faster on Linux
                 ctx.stroke();
                 ctx.beginPath();
 
-                x = (xf(xData[i - 1]) + 0.5);
-                y = height - (yf(yData[i - 1]) + 0.5);
-                ctx.moveTo(x, y);
+                dots = 0;
+                prev = null;
+                continue;
             }
-            x = (xf(xData[i]) + 0.5);
-            y = height - (yf(yData[i]) + 0.5);
-            ctx.lineTo(x, y);
+
+            prev = yData[i];
+            ++i;
+        }
+        if (dots > 0) {
+            ctx.stroke();
         }
 
-        ctx.stroke();
         console.timeEnd('render ' + itemNo);
     }
 

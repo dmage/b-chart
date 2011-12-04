@@ -9,7 +9,7 @@ BEM.decl('b-chart-processor__stacked', {
         var sliceName = this.params.sliceName || "y",
             xSliceName = this.params.xSliceName || "x",
             shiftSliceName = this.params.shiftSliceName || "shift",
-            yslices = [], xslices = [], shifts = [],
+            yslices = [], xslices = [],
             renderSlices = [], renderX = [], renderShifts = [];
 
         var interpolate = {
@@ -25,7 +25,6 @@ BEM.decl('b-chart-processor__stacked', {
             var shiftSlice = renderData[shiftSliceName] || [];
             yslices.push(ySlice);
             xslices.push(xSlice);
-            shifts.push(shiftSlice);
             renderSlices.push([]);
             renderShifts.push([]);
         }

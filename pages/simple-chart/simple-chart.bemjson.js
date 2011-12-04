@@ -47,7 +47,7 @@
                         rangeProvider: {
                             name: 'b-chart__static-range-provider',
                             min: 0,
-                            max: 2
+                            max: 4/3
                         },
                         filters: [
                             { name: 'b-chart-processor__stacked' }
@@ -71,13 +71,13 @@
                         dataProvider: {
                             name: 'i-math-data-provider',
                             func: 'sin2',
-                            step: 0.2
+                            step: 0.005
                         },
                         filters: [
                             {
                                 name: 'b-chart-filter__threshold',
-                                min: -0.8,
-                                max: 10.8
+                                min: 0,
+                                max: 2/3
                             }
                         ]
                     },
@@ -88,8 +88,8 @@
                         color: '#339',
                         dataProvider: {
                             name: 'i-math-data-provider',
-                            func: 'sin2',
-                            step: 0.2
+                            func: 'cos2',
+                            step: 0.005
                         }
                     },
                     {

@@ -2,7 +2,7 @@
 
 (function($) {
 
-BEM.decl('b-chart-render__line', {
+BEM.decl('b-chart-render__fill', {
 
     drawItem : function(sched, layers, itemNo) {
         var dim = this.params.dimensions,
@@ -20,7 +20,7 @@ BEM.decl('b-chart-render__line', {
             xf = xAxis.scale.f,
             yf = yAxis.scale.f,
             x, y, prev,
-            i, l, dots,
+            i, l, dots, begin,
             mozilla = $.browser.mozilla;
 
         console.time('render ' + itemNo);
@@ -29,8 +29,7 @@ BEM.decl('b-chart-render__line', {
         canvas.css('left', '0');
         canvas.css('width', '100%');
 
-        ctx.strokeStyle = item.color || "#000";
-        ctx.lineWidth = 1;
+        ctx.fillStyle = item.color || "#000";
 
         i = 0;
         l = xData.length;
@@ -39,7 +38,12 @@ BEM.decl('b-chart-render__line', {
         while (i < l) {
             if (yData[i] === null) {
                 if (dots > 0) {
-                    ctx.stroke();
+                    for (var j = i; j >= begin; --j) {
+                        x = (xf(xData[j]) + 0.5);
+                        y = height - (yf(shiftData[j] || 0) + 0.5);
+                        ctx.lineTo(x, y);
+                    }
+                    ctx.fill();
                 }
                 ++i;
                 dots = 0;
@@ -52,16 +56,21 @@ BEM.decl('b-chart-render__line', {
             if (prev === null) {
                 ctx.beginPath();
                 ctx.moveTo(x, y);
+                begin = i;
             } else {
                 ctx.lineTo(x, y);
             }
 
             ++dots;
-            if (mozilla && dots == 2000) {
-                // restart line every 2000 points
+            if (mozilla && dots == 10000) {
+                // restart line every 10000 points
                 // it gives a bit different result, but much faster on Linux
-                ctx.stroke();
-                ctx.beginPath();
+                for (var j = i; j >= begin; --j) {
+                    x = (xf(xData[j]) + 0.5);
+                    y = height - (yf(shiftData[j] || 0) + 0.5);
+                    ctx.lineTo(x, y);
+                }
+                ctx.fill();
 
                 dots = 0;
                 prev = null;
@@ -72,7 +81,12 @@ BEM.decl('b-chart-render__line', {
             ++i;
         }
         if (dots > 0) {
-            ctx.stroke();
+            for (var j = i; j >= begin; --j) {
+                x = (xf(xData[j]) + 0.5);
+                y = height - (yf(shiftData[j] || 0) + 0.5);
+                ctx.lineTo(x, y);
+            }
+            ctx.fill();
         }
 
         console.timeEnd('render ' + itemNo);

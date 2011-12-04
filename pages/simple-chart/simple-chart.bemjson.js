@@ -71,13 +71,13 @@
                         dataProvider: {
                             name: 'i-math-data-provider',
                             func: 'sin2',
-                            step: 0.005
+                            step: 0.01
                         },
                         filters: [
                             {
                                 name: 'b-chart-filter__threshold',
                                 min: 0,
-                                max: 2/3
+                                max: 12/3
                             }
                         ]
                     },
@@ -89,8 +89,15 @@
                         dataProvider: {
                             name: 'i-math-data-provider',
                             func: 'cos2',
-                            step: 0.005
-                        }
+                            step: 0.01
+                        },
+                        filters: [
+                            {
+                                name: 'b-chart-filter__threshold',
+                                min: 0,
+                                max: 2/3
+                            }
+                        ]
                     },
                     {
                         name: 'sin(x), axis #2',

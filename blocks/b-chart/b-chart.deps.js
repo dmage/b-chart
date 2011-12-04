@@ -13,7 +13,8 @@
         { block: 'i-time-range-provider' },
         { block: 'b-chart-filter', elem: 'threshold' },
         { block: 'b-chart-processor', elem: 'stacked' },
-        { block: 'b-chart-render', elem: 'line' }
+        { block: 'b-chart-render', elem: 'line' },
+        { block: 'b-chart-render', elem: 'fill' }
     ],
     mustDeps: [
         {

@@ -14,7 +14,11 @@ BEM.decl('b-chart-processor__stacked', {
 
         var interpolate = {
             linear: function(x, x0, x1, y0, y1) {
-                return y0 + (y1 - y0)*(x - x0)/(x1 - x0);
+                if (x0 == x1) {
+                    return (y0 + y1)/2;
+                } else {
+                    return y0 + (y1 - y0)*(x - x0)/(x1 - x0);
+                }
             }
         };
 
@@ -30,18 +34,31 @@ BEM.decl('b-chart-processor__stacked', {
         }
 
         var it = [], // iterators
+            pit = [], // previous iterator value
+            nit = [], // next iterator value
+            st = [], // state
+            s = 0, // shift
             c = 0, // elements in each renderSlices and renderX
             x = null;
 
         // Initialize iterators and search minimal X value
         for (var i = 0; i < items.length; ++i) {
-            it.push(0);
+            var xData = xslices[i],
+                yData = yslices[i],
+                j = 0, j = 0, l = yData.length;
 
-            if (xslices[i].length > 0) {
-                if (x === null || xslices[i][0] < x) {
-                    x = xslices[i][0];
+            if (xData.length > 0) {
+                if (x === null || xData[0] < x) {
+                    x = xData[0];
                 }
             }
+
+            st.push(null);
+            while (j < l && yData[j] === null) {
+                ++j;
+            }
+            it.push(j);
+            pit.push(j);
         }
 
         // Main loop
@@ -52,32 +69,42 @@ BEM.decl('b-chart-processor__stacked', {
                 var y;
 
                 // Get Y for current X value
-                if (it[i] == xslices[i].length) {
-                    // TODO, shift offsets
-                    y = 0; // end of list
-                } else {
-                    if (xslices[i][it[i]] != x) {
-                        if (it[i] != 0) {
-                            y = interpolate.linear(
-                                x,
-                                xslices[i][it[i] - 1],
-                                xslices[i][it[i]    ],
-                                yslices[i][it[i] - 1],
-                                yslices[i][it[i]    ]
-                            );
-                        } else {
-                            // TODO, shift offsets
-                            y = 0; // begin of list
-                        }
+                if (xslices[i][it[i]] == x) {
+                    y = yslices[i][it[i]];
+                    if (y === null) {
+                        st[i] = y;
                     } else {
-                        y = yslices[i][it[i]];
+                        st[i] = true;
+
+                        pit[i] = it[i];
+                        nit[i] = it[i] + 1;
+                        while (nit[i] < xslices[i].length - 1 && yslices[i][nit[i]] === null) {
+                            ++nit[i];
+                        }
+                        if (nit[i] >= xslices[i].length - 1 || yslices[i][nit[i]] === null) {
+                            nit[i] = it[i];
+                        }
                     }
-                    while (it[i] != xslices[i].length && xslices[i][it[i]] == x) {
-                        ++it[i];
-                    }
+                    ++it[i];
+                } else {
+                    y = null;
                 }
 
-                renderSlices[i][c] = s + y;
+                if (y === null) {
+                    y = interpolate.linear(
+                        x,
+                        xslices[i][pit[i]],
+                        xslices[i][nit[i]],
+                        yslices[i][pit[i]],
+                        yslices[i][nit[i]]
+                    );
+                }
+
+                if (st[i] !== true) {
+                    renderSlices[i][c] = st[i];
+                } else {
+                    renderSlices[i][c] = y;
+                }
                 renderShifts[i][c] = s;
                 s += y;
             }

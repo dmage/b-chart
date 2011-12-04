@@ -27,7 +27,7 @@
                         rangeProvider: {
                             name: 'i-time-range-provider',
                             period: 50,
-                            updateInterval: 2000
+                            updateInterval: 10000
                         }
                     },
                     {
@@ -44,13 +44,23 @@
                     {
                         pos: 'left',
                         scale: 'b-scale__linear',
-                        range: {
-                            from: 0.0,
-                            to: 10.0
-                        }
+                        rangeProvider: {
+                            name: 'b-chart__static-range-provider',
+                            min: 0,
+                            max: 2
+                        },
+                        filters: [
+                            { name: 'b-chart-processor__stacked' }
+                        ]
                     },
-                    { pos: 'right' },
-                    { pos: 'left' }
+                    {
+                        pos: 'right',
+                        rangeProvider: {
+                            name: 'b-chart__static-range-provider',
+                            min: -1,
+                            max: 1
+                        },
+                    },
                 ],
                 items: [
                     {
@@ -60,14 +70,14 @@
                         color: 'rgba(50,200,50,0.7)',
                         dataProvider: {
                             name: 'i-math-data-provider',
-                            func: 'sin',
-                            step: 0.002
+                            func: 'sin2',
+                            step: 0.2
                         },
                         filters: [
                             {
                                 name: 'b-chart-filter__threshold',
                                 min: -0.8,
-                                max: 0.8
+                                max: 10.8
                             }
                         ]
                     },
@@ -78,19 +88,19 @@
                         color: '#339',
                         dataProvider: {
                             name: 'i-math-data-provider',
-                            func: 'cos',
-                            step: 0.002
+                            func: 'sin2',
+                            step: 0.2
                         }
                     },
                     {
                         name: 'sin(x), axis #2',
                         xAxis: 1,
-                        yAxis: 0,
+                        yAxis: 1,
                         color: 'rgba(240,50,50,0.2)',
                         dataProvider: {
                             name: 'i-math-data-provider',
                             func: 'sin',
-                            step: 0.05
+                            step: 0.5
                         }
                     }
                 ],

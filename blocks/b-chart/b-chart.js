@@ -73,7 +73,8 @@ BEM.DOM.decl('b-chart', {
 
             var settingsProvider = BEM.create(
                 this.params.settingsProvider.name,
-                this.params.settingsProvider);
+                this.params.settingsProvider
+            );
 
             this.ping();
             settingsProvider.get(initCallbacks);
@@ -158,6 +159,10 @@ BEM.DOM.decl('b-chart', {
             overlays = _this.content.overlays;
 
         _this.renderTasks = [];
+        _this.renderTasks.push(function(sched) {
+            _this.runProcessors();
+            sched.next();
+        });
         for (var i = 0, l = overlays.length; i < l; ++i) {
             _this._initOverlay(overlays[i]);
         }
@@ -170,6 +175,7 @@ BEM.DOM.decl('b-chart', {
 
         for (var i = 0, l = _this.content.overlays.length; i < l; ++i) {
             var overlay = _this.content.overlays[i];
+            // FIXME respect overlays params
             _this.content.overlays[i] = BEM.create(overlay, {
                 dimensions: _this.dimensions,
                 content: _this.content
@@ -204,6 +210,46 @@ BEM.DOM.decl('b-chart', {
         delete _this.content.yAxes;
     },
 
+    _initYAxis : function(yAxisNo, domElem) {
+        var _this = this,
+            yAxis = this.content.yAxes[yAxisNo];
+
+        yAxis.block = $('.b-axis', domElem).bem('b-axis');
+
+        yAxis.scale = BEM.create('b-scale__linear');
+
+        yAxis.rangeProvider = BEM.create(
+            yAxis.rangeProvider.name,
+            yAxis.rangeProvider
+        );
+
+        typeof yAxis.filters !== 'undefined' || (yAxis.filters = []);
+        for (var i = 0, l = yAxis.filters.length; i < l; ++i) {
+            yAxis.filters[i] = BEM.create(
+                yAxis.filters[i].name,
+                // FIXME respect filters params
+                {
+                    dimensions: _this.dimensions,
+                    content: _this.content
+                }
+            );
+        }
+    },
+
+    _updateYAxisRange : function(yAxisNo, range) {
+        var _this = this,
+            yAxis = _this.content.yAxes[yAxisNo],
+            scale = yAxis.scale;
+
+        if (range.min == scale.inputMin && range.max == scale.inputMax) {
+            return;
+        }
+
+        scale.input(range.min, range.max);
+
+        _this._renderYAxis(yAxisNo);
+    },
+
     setYAxes : function(yAxes) {
         var _this = this;
 
@@ -218,26 +264,20 @@ BEM.DOM.decl('b-chart', {
             }]));
         }
 
-        function initAxis(domElem) {
-            this.block = $('.b-axis', domElem).bem('b-axis');
+        for (var yAxisNo = 0, l = yAxes.length; yAxisNo < l; ++yAxisNo) {
+            var yAxis = yAxes[yAxisNo],
+                domElem;
 
-            this.scale = BEM.create('b-scale__linear');
-            this.scale.input(-1, 1); // FIXME
+            if (yAxis.pos == 'left') {
+                domElem = createDomElem.call(yAxis);
+                _this.elem('row', 'v', 'middle').prepend(domElem);
+            } else if (yAxis.pos =='right') {
+                domElem = createDomElem.call(yAxis);
+                _this.elem('row', 'v', 'middle').append(domElem);
+            }
+
+            _this._initYAxis(yAxisNo, domElem);
         }
-
-        var yAxesLeft = _this._getYAxes('left');
-        $.each(yAxesLeft, function() {
-            var domElem = createDomElem.call(this);
-            _this.elem('row', 'v', 'middle').prepend(domElem);
-            initAxis.call(this, domElem);
-        });
-
-        var yAxesRight = _this._getYAxes('right');
-        $.each(yAxesRight, function() {
-            var domElem = createDomElem.call(this);
-            _this.elem('row', 'v', 'middle').append(domElem);
-            initAxis.call(this, domElem);
-        });
 
         // FIXME add gap to X axes
 
@@ -267,7 +307,8 @@ BEM.DOM.decl('b-chart', {
 
         xAxis.rangeProvider = BEM.create(
             xAxis.rangeProvider.name,
-            xAxis.rangeProvider);
+            xAxis.rangeProvider
+        );
         xAxis.rangeProvider.on('update', function(e) {
             // shift canvases in new scheduler cycle (prevent flickering)
             taskScheduler.run(PRIO_SYSTEM, [function(sched) {
@@ -551,6 +592,32 @@ BEM.DOM.decl('b-chart', {
             mask[i] = items[i].ready;
         }
         return mask;
+    },
+
+    runProcessors : function() {
+        var _this = this,
+            yAxes = _this.content.yAxes,
+            items = _this.content.items;
+
+        for (var yAxisNo = 0, l = yAxes.length; yAxisNo < l; ++yAxisNo) {
+            var yAxis = yAxes[yAxisNo],
+                range = yAxis.rangeProvider.get(); // FIXME get(data)
+
+            var localItems = [];
+            for (var i = 0, m = items.length; i < m; ++i) {
+                var item = items[i];
+                if (item.yAxis != yAxisNo) continue;
+
+                item.renderData = item.data;
+                localItems.push(item);
+            }
+
+            for (var i = 0, m = yAxis.filters.length; i < m; ++i) {
+                yAxis.filters[i].run(localItems);
+            }
+
+            _this._updateYAxisRange(yAxisNo, range);
+        }
     },
 
     render : function(delay) {

@@ -32,7 +32,15 @@ BEM.decl('i-math-data-provider', {
 
     sin : Math.sin,
 
-    cos : Math.cos
+    cos : Math.cos,
+
+    sin2 : function(x) {
+        return Math.pow(Math.sin(x), 2);
+    },
+
+    cos2 : function(x) {
+        return Math.pow(Math.cos(x), 2);
+    }
 
 });
 

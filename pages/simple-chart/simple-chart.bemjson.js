@@ -26,7 +26,7 @@
                         scale: 'b-scale__linear',
                         rangeProvider: {
                             name: 'i-time-range-provider',
-                            period: 50,
+                            period: 10,
                             updateInterval: 10000
                         }
                     },
@@ -71,13 +71,13 @@
                         dataProvider: {
                             name: 'i-math-data-provider',
                             func: 'sin2',
-                            step: 0.01
+                            step: 0.001
                         },
                         filters: [
                             {
                                 name: 'b-chart-filter__threshold',
-                                min: 0,
-                                max: 12/3
+                                min: 1/3,
+                                max: 15/16
                             }
                         ]
                     },
@@ -89,13 +89,13 @@
                         dataProvider: {
                             name: 'i-math-data-provider',
                             func: 'cos2',
-                            step: 0.01
+                            step: 0.001
                         },
                         filters: [
                             {
                                 name: 'b-chart-filter__threshold',
                                 min: 0,
-                                max: 2/3
+                                max: 5/6
                             }
                         ]
                     },

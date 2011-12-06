@@ -59,6 +59,7 @@ BEM.decl('b-chart-processor__stacked', {
             }
             it.push(j);
             pit.push(j);
+            nit.push(j);
         }
 
         // Main loop

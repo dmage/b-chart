@@ -6,6 +6,7 @@
         { block: 'b-busy' },
         { block: 'b-chart-overlay', elem: 'grid' },
         { block: 'b-chart-overlay', elem: 'render' },
+        { block: 'b-chart-overlay', elem: 'tooltip' },
         { elem: 'static-settings-provider' },
         { elem: 'static-range-provider' },
         { elem: 'data-range-provider' },

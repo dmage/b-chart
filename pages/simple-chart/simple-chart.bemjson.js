@@ -151,7 +151,8 @@
                         name: 'b-chart-overlay__render',
                         renderName: 'b-chart-render__line',
                         colorMixin: '#000'
-                    }
+                    },
+                    { name: 'b-chart-overlay__tooltip' }
                 ]
             }
         }

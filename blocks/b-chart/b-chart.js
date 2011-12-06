@@ -37,7 +37,9 @@ BEM.DOM.decl('b-chart', {
                 yAxes: [],
                 items: [],
                 overlays: [],
-                layers: []
+                layers: [],
+                viewport: _this.elem('viewport'),
+                clippedViewport: _this.elem('clipped-viewport')
             };
 
             _this.applySize();

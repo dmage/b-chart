@@ -8,6 +8,7 @@
         { block: 'b-chart-overlay', elem: 'render' },
         { elem: 'static-settings-provider' },
         { elem: 'static-range-provider' },
+        { elem: 'data-range-provider' },
         { block: 'b-scale', elem: 'linear' },
         { block: 'i-math-data-provider' },
         { block: 'i-time-range-provider' },

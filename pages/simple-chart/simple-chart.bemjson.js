@@ -45,9 +45,8 @@
                         pos: 'left',
                         scale: 'b-scale__linear',
                         rangeProvider: {
-                            name: 'b-chart__static-range-provider',
-                            min: 0,
-                            max: 4/3
+                            name: 'b-chart__data-range-provider',
+                            minSliceName: ''
                         },
                         processors: [
                             { name: 'b-chart-processor__stacked' }

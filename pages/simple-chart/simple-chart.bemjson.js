@@ -26,8 +26,8 @@
                         scale: 'b-scale__linear',
                         rangeProvider: {
                             name: 'i-time-range-provider',
-                            period: 10,
-                            updateInterval: 10000
+                            period: 20,
+                            updateInterval: 1000
                         }
                     },
                     {
@@ -54,6 +54,15 @@
                         ]
                     },
                     {
+                        pos: 'left',
+                        scale: 'b-scale__linear',
+                        rangeProvider: {
+                            name: 'b-chart__static-range-provider',
+                            min: 0,
+                            max: 4/3
+                        }
+                    },
+                    {
                         pos: 'right',
                         rangeProvider: {
                             name: 'b-chart__static-range-provider',
@@ -64,10 +73,43 @@
                 ],
                 items: [
                     {
+                        name: 'sin(x), axis #3',
+                        xAxis: 1,
+                        yAxis: 2,
+                        color: 'rgba(220,220,220,0.4)',
+                        dataProvider: {
+                            name: 'i-math-data-provider',
+                            func: 'sin',
+                            step: 0.01
+                        }
+                    },
+                    {
+                        name: 'sin(x)',
+                        xAxis: 0,
+                        yAxis: 1,
+                        color: '#ff6',
+                        dataProvider: {
+                            name: 'i-math-data-provider',
+                            func: 'sin2',
+                            step: 0.01
+                        }
+                    },
+                    {
+                        name: 'cos(x)',
+                        xAxis: 0,
+                        yAxis: 1,
+                        color: '#6f6',
+                        dataProvider: {
+                            name: 'i-math-data-provider',
+                            func: 'cos2',
+                            step: 0.01
+                        }
+                    },
+                    {
                         name: 'sin(x)',
                         xAxis: 0,
                         yAxis: 0,
-                        color: 'rgba(50,200,50,0.7)',
+                        color: '#cc6',
                         dataProvider: {
                             name: 'i-math-data-provider',
                             func: 'sin2',
@@ -85,7 +127,7 @@
                         name: 'cos(x)',
                         xAxis: 0,
                         yAxis: 0,
-                        color: '#339',
+                        color: '#6c6',
                         dataProvider: {
                             name: 'i-math-data-provider',
                             func: 'cos2',
@@ -98,17 +140,6 @@
                                 max: 5/6
                             }
                         ]
-                    },
-                    {
-                        name: 'sin(x), axis #2',
-                        xAxis: 1,
-                        yAxis: 1,
-                        color: 'rgba(240,50,50,0.2)',
-                        dataProvider: {
-                            name: 'i-math-data-provider',
-                            func: 'sin',
-                            step: 0.5
-                        }
                     }
                 ],
                 overlays: [

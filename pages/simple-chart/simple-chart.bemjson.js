@@ -113,7 +113,15 @@
                 ],
                 overlays: [
                     { name: 'b-chart-overlay__grid' },
-                    { name: 'b-chart-overlay__render' }
+                    {
+                        name: 'b-chart-overlay__render',
+                        renderName: 'b-chart-render__fill'
+                    },
+                    {
+                        name: 'b-chart-overlay__render',
+                        renderName: 'b-chart-render__line',
+			colorMixin: '#000'
+                    }
                 ]
             }
         }

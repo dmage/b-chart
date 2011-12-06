@@ -9,7 +9,7 @@ BEM.decl('b-chart-overlay__render', {
             var _this = this;
 
             _this.render = BEM.create(
-                'b-chart-render__fill',
+                _this.params.renderName || 'b-chart-render__line',
                 _this.params
             );
         }

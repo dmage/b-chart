@@ -21,6 +21,8 @@ BEM.decl('b-chart-render__line', {
             yf = yAxis.scale.f,
             x, y, prev,
             i, l, dots,
+            colorMixin = this.params.colorMixin,
+            colorMixinLevel = this.params.colorMixinLevel || 0.5,
             mozilla = $.browser.mozilla;
 
         console.time('render ' + itemNo);
@@ -29,7 +31,25 @@ BEM.decl('b-chart-render__line', {
         canvas.css('left', '0');
         canvas.css('width', '100%');
 
-        ctx.strokeStyle = item.color || "#000";
+        var color = item.color || "rgb(0,0,0)";
+        if (typeof colorMixin !== 'undefined') {
+            var colorRgba = $.colorToRgba(color),
+                mixinRgba = $.colorToRgba(colorMixin)
+                lvl = colorMixinLevel;
+
+            var result = {
+                r: Math.floor((1 - lvl)*colorRgba.r + lvl*mixinRgba.r),
+                g: Math.floor((1 - lvl)*colorRgba.g + lvl*mixinRgba.g),
+                b: Math.floor((1 - lvl)*colorRgba.b + lvl*mixinRgba.b),
+                a: colorRgba.a
+            };
+            if (result.a == 1) {
+                color = 'rgb(' + result.r + ',' + result.g + ',' + result.b + ')';
+            } else {
+                color = 'rgba(' + result.r + ',' + result.g + ',' + result.b + ',' + result.a + ')';
+            }
+        }
+        ctx.strokeStyle = color;
         ctx.lineWidth = 1;
 
         i = 0;

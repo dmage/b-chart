@@ -21,6 +21,9 @@ BEM.decl('b-chart-render__fill', {
             yf = yAxis.scale.f,
             x, y, prev,
             i, l, dots, begin,
+            colorMixin = this.params.colorMixin,
+            colorMixinLevel = this.params.colorMixinLevel || 0.5,
+            colorAlpha = this.params.colorAlpha,
             mozilla = $.browser.mozilla;
 
         console.time('render ' + itemNo);
@@ -29,7 +32,33 @@ BEM.decl('b-chart-render__fill', {
         canvas.css('left', '0');
         canvas.css('width', '100%');
 
-        ctx.fillStyle = item.color || "#000";
+        var color = item.color || "rgb(0,0,0)";
+        if (typeof colorMixin !== 'undefined' || typeof colorAlpha !== 'undefined') {
+            var result = $.colorToRgba(color);
+
+            if (typeof colorMixin !== 'undefined') {
+                var mixin = $.colorToRgba(colorMixin)
+                    lvl = colorMixinLevel;
+
+                result = {
+                    r: Math.floor((1 - lvl) * result.r + lvl * mixin.r),
+                    g: Math.floor((1 - lvl) * result.g + lvl * mixin.g),
+                    b: Math.floor((1 - lvl) * result.b + lvl * mixin.b),
+                    a: result.a
+                };
+            }
+
+            if (typeof colorAlpha !== 'undefined') {
+                result.a = colorAlpha;
+            }
+
+            if (result.a == 1) {
+                color = 'rgb(' + result.r + ',' + result.g + ',' + result.b + ')';
+            } else {
+                color = 'rgba(' + result.r + ',' + result.g + ',' + result.b + ',' + result.a + ')';
+            }
+        }
+        ctx.fillStyle = color;
 
         i = 0;
         l = xData.length;

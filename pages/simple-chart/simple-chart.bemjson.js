@@ -49,7 +49,7 @@
                             min: 0,
                             max: 4/3
                         },
-                        filters: [
+                        processors: [
                             { name: 'b-chart-processor__stacked' }
                         ]
                     },

@@ -228,14 +228,14 @@ BEM.DOM.decl('b-chart', {
             yAxis.rangeProvider
         );
 
-        typeof yAxis.filters !== 'undefined' || (yAxis.filters = []);
-        for (var i = 0, l = yAxis.filters.length; i < l; ++i) {
-            var filter = yAxis.filters[i];
-            filter.dimensions = _this.dimensions;
-            filter.content = _this.content;
-            yAxis.filters[i] = BEM.create(
-                filter.name,
-                filter
+        typeof yAxis.processors !== 'undefined' || (yAxis.processors = []);
+        for (var i = 0, l = yAxis.processors.length; i < l; ++i) {
+            var processor = yAxis.processors[i];
+            processor.dimensions = _this.dimensions;
+            processor.content = _this.content;
+            yAxis.processors[i] = BEM.create(
+                processor.name,
+                processor
             );
         }
     },
@@ -604,8 +604,7 @@ BEM.DOM.decl('b-chart', {
             items = _this.content.items;
 
         for (var yAxisNo = 0, l = yAxes.length; yAxisNo < l; ++yAxisNo) {
-            var yAxis = yAxes[yAxisNo],
-                range = yAxis.rangeProvider.get(); // FIXME get(data)
+            var yAxis = yAxes[yAxisNo];
 
             var localItems = [];
             for (var i = 0, m = items.length; i < m; ++i) {
@@ -616,10 +615,11 @@ BEM.DOM.decl('b-chart', {
                 localItems.push(item);
             }
 
-            for (var i = 0, m = yAxis.filters.length; i < m; ++i) {
-                yAxis.filters[i].run(localItems);
+            for (var i = 0, m = yAxis.processors.length; i < m; ++i) {
+                yAxis.processors[i].run(localItems);
             }
 
+            var range = yAxis.rangeProvider.get(localItems);
             _this._updateYAxisRange(yAxisNo, range);
         }
     },

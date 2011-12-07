@@ -36,7 +36,7 @@
                         rangeProvider: {
                             name: 'b-chart__static-range-provider',
                             min: 0,
-                            max: 180
+                            max: 80
                         }
                     }
                 ],

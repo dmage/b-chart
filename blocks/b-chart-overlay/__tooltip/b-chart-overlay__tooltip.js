@@ -76,6 +76,10 @@ BEM.decl('b-chart-overlay__tooltip', {
                 if (xVal > xEnd) {
                     break;
                 }
+                if (yVal === null) {
+                    ++j;
+                    continue;
+                }
 
                 var dx = px - x.f(xVal),
                     dy = py - y.f(yVal + shiftVal),

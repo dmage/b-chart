@@ -12,11 +12,11 @@ $.binarySearch = function binarySearch(value, arr) {
         mid = (low + high) >> 1;
         midValue = arr[mid];
         if (value < midValue) {
-            high = i - 1;
+            high = mid - 1;
         } else if (value > midValue) {
-            low = i + 1;
+            low = mid + 1;
         } else {
-            return i;
+            return mid;
         }
     }
 

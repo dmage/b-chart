@@ -9,9 +9,13 @@ BEM.decl('b-scale__linear', {
         var outputMin = this.outputMin;
         var factor = (this.outputMax - outputMin)/(this.inputMax - inputMin);
 
-        this.f = function(x) {
+        this.f = function f(x) {
             return outputMin + (x - inputMin)*factor;
-        }
+        };
+
+        this.fInv = function fInv(x) {
+            return inputMin + (x - outputMin)/factor;
+        };
     },
 
     input : function(min, max) {
@@ -45,7 +49,7 @@ BEM.decl('b-scale__linear', {
     },
 
     fInv : function(x) {
-        return this.inputMin + (x - this.outputMin)/this.factor;
+        return undefined;
     },
 
     ticks : function(nmin, nmax) {

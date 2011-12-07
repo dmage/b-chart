@@ -27,7 +27,7 @@
                         rangeProvider: {
                             name: 'i-time-range-provider',
                             period: 20,
-                            updateInterval: 1000
+                            updateInterval: 10000
                         }
                     },
                     {

@@ -14,9 +14,6 @@ BEM.decl('b-chart-render__fill', {
             yAxis = content.yAxes[item.yAxis || 0] || content.yAxes[0],
             canvas = layers[itemNo].canvas,
             ctx = layers[itemNo].ctx,
-            xData = item.renderData.x,
-            yData = item.renderData.y,
-            shiftData = item.renderData.shift || [],
             xf = xAxis.scale.f,
             yf = yAxis.scale.f,
             x, y, prev,
@@ -25,6 +22,20 @@ BEM.decl('b-chart-render__fill', {
             colorMixinLevel = this.params.colorMixinLevel || 0.5,
             colorAlpha = this.params.colorAlpha,
             mozilla = $.browser.mozilla;
+
+        var xSliceName = this.params.xSliceName,
+            topSliceName = this.params.topSliceName,
+            bottomSliceName = this.params.bottomSliceName,
+            shiftSliceName = this.params.shiftSliceName;
+        typeof xSliceName !== 'undefined' || (xSliceName = "x");
+        typeof topSliceName !== 'undefined' || (topSliceName = "y");
+        typeof bottomSliceName !== 'undefined' || (bttomSliceName = "");
+        typeof shiftSliceName !== 'undefined' || (shiftSliceName = "shift");
+
+        var xData = item.renderData[xSliceName],
+            topData = item.renderData[topSliceName],
+            bottomData = item.renderData[bottomSliceName] || [],
+            shiftData = item.renderData[shiftSliceName] || [];
 
         console.time('render ' + itemNo);
 
@@ -60,20 +71,25 @@ BEM.decl('b-chart-render__fill', {
         }
         ctx.fillStyle = color;
 
+        function fill() {
+            for (var j = i; j >= begin; --j) {
+                x = (xf(xData[j]) + 0.5);
+                y = height - (yf((bottomData[j] || 0) + (shiftData[j] || 0)) + 0.5);
+                ctx.lineTo(x, y);
+            }
+            ctx.fill();
+        }
+
         i = 0;
         l = xData.length;
         dots = 0;
         prev = null;
         while (i < l) {
-            if (yData[i] === null) {
+            if (topData[i] === null) {
                 if (dots > 0) {
-                    for (var j = i; j >= begin; --j) {
-                        x = (xf(xData[j]) + 0.5);
-                        y = height - (yf(shiftData[j] || 0) + 0.5);
-                        ctx.lineTo(x, y);
-                    }
-                    ctx.fill();
+                    fill();
                 }
+
                 ++i;
                 dots = 0;
                 prev = null;
@@ -81,7 +97,7 @@ BEM.decl('b-chart-render__fill', {
             }
 
             x = (xf(xData[i]) + 0.5);
-            y = height - (yf(yData[i] + (shiftData[i] || 0)) + 0.5);
+            y = height - (yf(topData[i] + (shiftData[i] || 0)) + 0.5);
             if (prev === null) {
                 ctx.beginPath();
                 ctx.moveTo(x, y);
@@ -94,28 +110,18 @@ BEM.decl('b-chart-render__fill', {
             if (mozilla && dots == 10000) {
                 // restart line every 10000 points
                 // it gives a bit different result, but much faster on Linux
-                for (var j = i; j >= begin; --j) {
-                    x = (xf(xData[j]) + 0.5);
-                    y = height - (yf(shiftData[j] || 0) + 0.5);
-                    ctx.lineTo(x, y);
-                }
-                ctx.fill();
+                fill();
 
                 dots = 0;
                 prev = null;
                 continue;
             }
 
-            prev = yData[i];
+            prev = topData[i];
             ++i;
         }
         if (dots > 0) {
-            for (var j = i; j >= begin; --j) {
-                x = (xf(xData[j]) + 0.5);
-                y = height - (yf(shiftData[j] || 0) + 0.5);
-                ctx.lineTo(x, y);
-            }
-            ctx.fill();
+            fill();
         }
 
         console.timeEnd('render ' + itemNo);

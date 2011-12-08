@@ -17,7 +17,7 @@ BEM.decl('i-tango-color-scheme', {
         '#cc0000', // Scarlet Red
         '#75507b', // Plum
         '#f57900', // Orange
-        '#d3d7cf', // Aluminium
+        '#babdb6', // Aluminium
         '#c17d11'  // Chocolate
     ]
 

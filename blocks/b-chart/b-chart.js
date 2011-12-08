@@ -42,6 +42,11 @@ BEM.DOM.decl('b-chart', {
                 clippedViewport: _this.elem('clipped-viewport')
             };
 
+            _this.colorScheme = BEM.create(
+                (_this.params.colorScheme && _this.params.colorScheme.name) || 'i-tango-color-scheme',
+                _this.params.colorScheme
+            );
+
             _this.applySize();
             _this.bindToWin('resize', function() {
                 taskScheduler.run(PRIO_SYSTEM, [function(sched) {
@@ -442,6 +447,8 @@ BEM.DOM.decl('b-chart', {
                 item.filters[i]
             );
         }
+
+        item.color || (item.color = _this.colorScheme.get(itemNo));
 
         item.renderData = {};
 

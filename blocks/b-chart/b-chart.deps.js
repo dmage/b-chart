@@ -16,7 +16,8 @@
         { block: 'b-chart-filter', elem: 'threshold' },
         { block: 'b-chart-processor', elem: 'stacked' },
         { block: 'b-chart-render', elem: 'line' },
-        { block: 'b-chart-render', elem: 'fill' }
+        { block: 'b-chart-render', elem: 'fill' },
+        { block: 'i-tango-color-scheme' }
     ],
     mustDeps: [
         {

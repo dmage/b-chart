@@ -443,6 +443,8 @@ BEM.DOM.decl('b-chart', {
             );
         }
 
+        item.renderData = {};
+
         if (_this.content.xAxes) {
             _this._updateItemData(item);
             _this._requestItemData(item);
@@ -475,8 +477,6 @@ BEM.DOM.decl('b-chart', {
         }
         item.data = data;
         console.timeEnd('filter');
-
-        item.renderData = null;
 
         item._rendered = false;
     },

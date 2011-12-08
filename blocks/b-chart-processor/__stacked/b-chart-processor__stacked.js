@@ -132,6 +132,7 @@ BEM.decl('b-chart-processor__stacked', {
             renderData[sliceName] = renderSlices[i];
             renderData[xSliceName] = renderX;
             renderData[shiftSliceName] = renderShifts[i];
+            items[i]._rendered = false;
         }
     }
 

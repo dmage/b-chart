@@ -62,6 +62,10 @@ BEM.decl('b-scale__linear', {
         }
         result.push(this.inputMax);
         return result;
+    },
+
+    format : function(value) {
+        return Math.round(value*100)/100;
     }
 
 });

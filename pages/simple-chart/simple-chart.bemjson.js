@@ -28,7 +28,8 @@
                             name: 'i-time-range-provider',
                             period: 20,
                             updateInterval: 10000
-                        }
+                        },
+                        units: "unixtime"
                     },
                     {
                         pos: 'top',

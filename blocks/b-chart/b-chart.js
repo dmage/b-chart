@@ -6,6 +6,7 @@
 var PRIO_SYSTEM = BEM.blocks['i-task-scheduler'].PRIO_SYSTEM;
 var PRIO_UI = BEM.blocks['i-task-scheduler'].PRIO_UI;
 var taskScheduler = BEM.blocks['i-task-scheduler'].instance;
+var units = BEM.blocks['i-units'].instance;
 
 BEM.DOM.decl('b-chart', {
 
@@ -328,6 +329,8 @@ BEM.DOM.decl('b-chart', {
             }]);
         });
 
+        typeof xAxis.units !== 'undefined' || (xAxis.units = "");
+
         _this._updateXAxisRange(xAxisNo);
     },
 
@@ -448,7 +451,8 @@ BEM.DOM.decl('b-chart', {
             );
         }
 
-        item.color || (item.color = _this.colorScheme.get(itemNo));
+        typeof item.color !== 'undefined' || (item.color = _this.colorScheme.get(itemNo));
+        typeof item.units !== 'undefined' || (item.units = "");
 
         item.renderData = {};
 
@@ -523,7 +527,7 @@ BEM.DOM.decl('b-chart', {
             var tickValue = yAxis.ticks[i];
             ticks.push({
                 offset: _this.dimensions.height - Math.round(yAxis.scale.f(tickValue)) - 1,
-                label: tickValue
+                label: yAxis.scale.format(tickValue)
             });
         }
         yAxis.block.update(ticks);
@@ -535,13 +539,18 @@ BEM.DOM.decl('b-chart', {
 
         xAxis.ticks = xAxis.scale.ticks(Math.floor(_this.dimensions.width / 50));
 
-        var ticks = [];
+        var ticks = [],
+            prevValue;
         for (var i = 0; i < xAxis.ticks.length; ++i) {
-            var tickValue = xAxis.ticks[i];
+            var tickValue = xAxis.ticks[i],
+                label = units.format(tickValue, xAxis.units, xAxis.scale, prevValue);
+
             ticks.push({
                 offset: Math.round(xAxis.scale.f(tickValue)),
-                label: (""+tickValue).substr(-6) // FIXME
+                label: label
             });
+
+            prevValue = tickValue;
         }
         xAxis.block.update(ticks);
     },

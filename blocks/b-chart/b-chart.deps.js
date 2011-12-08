@@ -24,6 +24,7 @@
             block: 'i-bem',
             elem: 'dom'
         },
-        { block: 'i-task-scheduler' }
+        { block: 'i-task-scheduler' },
+        { block: 'i-units' }
     ]
 })

@@ -52,9 +52,9 @@ BEM.decl('b-scale__linear', {
         return undefined;
     },
 
-    ticks : function(nmin, nmax) {
+    ticks : function(n) {
         var range = (this.inputMax - this.inputMin);
-        var delta = range/nmin;
+        var delta = range/n;
 
         var l = Math.ceil(Math.log(delta)/Math.log(10));
 

@@ -520,15 +520,12 @@ BEM.DOM.decl('b-chart', {
         var _this = this,
             yAxis = this.content.yAxes[yAxisNo];
 
-        yAxis.ticks = yAxis.scale.ticks(5, 5);
+        yAxis.ticks = yAxis.scale.ticks(Math.floor(_this.dimensions.height / 40));
 
-        var ticks = [];
-        for (var i = 0; i < yAxis.ticks.length; ++i) {
-            var tickValue = yAxis.ticks[i];
-            ticks.push({
-                offset: _this.dimensions.height - Math.round(yAxis.scale.f(tickValue)) - 1,
-                label: yAxis.scale.format(tickValue)
-            });
+        var ticks = units.formatTicks(yAxis.ticks, "", yAxis.scale);
+        for (var i = 0, l = ticks.length; i < l; ++i) {
+            var tick = ticks[i];
+            tick.offset = _this.dimensions.height - Math.round(yAxis.scale.f(tick.tickValue)) - 1;
         }
         yAxis.block.update(ticks);
     },
@@ -539,18 +536,10 @@ BEM.DOM.decl('b-chart', {
 
         xAxis.ticks = xAxis.scale.ticks(Math.floor(_this.dimensions.width / 50));
 
-        var ticks = [],
-            prevValue;
-        for (var i = 0; i < xAxis.ticks.length; ++i) {
-            var tickValue = xAxis.ticks[i],
-                label = units.format(tickValue, xAxis.units, xAxis.scale, prevValue);
-
-            ticks.push({
-                offset: Math.round(xAxis.scale.f(tickValue)),
-                label: label
-            });
-
-            prevValue = tickValue;
+        var ticks = units.formatTicks(xAxis.ticks, xAxis.units, xAxis.scale);
+        for (var i = 0, l = ticks.length; i < l; ++i) {
+            var tick = ticks[i];
+            tick.offset = Math.round(xAxis.scale.f(tick.tickValue));
         }
         xAxis.block.update(ticks);
     },

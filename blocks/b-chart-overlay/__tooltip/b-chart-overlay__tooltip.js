@@ -14,6 +14,7 @@ BEM.decl('b-chart-overlay__tooltip', {
             $tooltip.css('min-width', '60px');
             $tooltip.css('background', 'white');
             $tooltip.css('border', '1px solid #666');
+            $tooltip.hide();
 
             _this.$tooltip = $tooltip;
             _this.$tooltip.appendTo(_this.params.content.viewport);
@@ -113,8 +114,9 @@ BEM.decl('b-chart-overlay__tooltip', {
             $tooltip.css('left', px + 'px');
             $tooltip.css('bottom', py + 'px');
             $tooltip.text(xVal + ',' + yVal + " -- " + iters);
+            $tooltip.show();
         } else {
-            $tooltip.text('miss ' + px + ',' + py + " -- " + iters);
+            $tooltip.hide();
         }
     }
 

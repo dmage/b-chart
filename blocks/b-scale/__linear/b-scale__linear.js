@@ -53,14 +53,38 @@ BEM.decl('b-scale__linear', {
     },
 
     ticks : function(nmin, nmax) {
-        var delta = (this.inputMax - this.inputMin)/(nmin - 1);
-        var result = [this.inputMin];
-        var x = result[0];
-        for (var i = 1; i < nmin - 1; ++i) {
-            x += delta;
-            result.push(x);
+        var range = (this.inputMax - this.inputMin);
+        var delta = range/nmin;
+
+        var l = Math.ceil(Math.log(delta)/Math.log(10));
+
+        delta /= Math.pow(10, l - 2);
+        var volume = 100;
+
+        // Searching nearest factor of volume
+        var rounded_delta = Math.round(delta),
+            diff = 0;
+        for (var i = 1; i < volume; ++i) {
+            if (rounded_delta <= delta) {
+                diff = Math.floor(i/2);
+            } else {
+                diff = -Math.floor(i/2);
+            }
+            rounded_delta = Math.round(delta) + diff;
+            if (volume % rounded_delta == 0) {
+                break;
+            }
         }
-        result.push(this.inputMax);
+
+        delta = rounded_delta*Math.pow(10, l - 2);
+
+        var result = [],
+            x = Math.ceil(this.inputMin/delta)*delta;
+        while (x <= this.inputMax) {
+            result.push(x);
+            x += delta;
+        }
+
         return result;
     },
 

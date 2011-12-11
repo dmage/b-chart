@@ -26,7 +26,7 @@
                         scale: 'b-scale__linear',
                         rangeProvider: {
                             name: 'i-time-range-provider',
-                            period: 20,
+                            period: 60,
                             updateInterval: 10000
                         },
                         units: "unixtime"

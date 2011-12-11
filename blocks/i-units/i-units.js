@@ -21,8 +21,14 @@ BEM.decl('i-units', {
 
     format : function(value, units, scale) {
         if (units == "unixtime") {
-            var d = new Date(value*1000);
-            return d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+            var d = new Date(value*1000),
+                hh = d.getHours(),
+                mm = d.getMinutes(),
+                ss = d.getSeconds();
+            if (hh < 10) hh = "0" + hh;
+            if (mm < 10) mm = "0" + mm;
+            if (ss < 10) ss = "0" + ss;
+            return hh + ":" + mm + ":" + ss;
         } else {
             return scale.format(value);
         }

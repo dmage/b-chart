@@ -534,7 +534,7 @@ BEM.DOM.decl('b-chart', {
         var _this = this,
             xAxis = this.content.xAxes[xAxisNo];
 
-        xAxis.ticks = xAxis.scale.ticks(Math.floor(_this.dimensions.width / 50));
+        xAxis.ticks = xAxis.scale.ticks(Math.floor(_this.dimensions.width / 60));
 
         var ticks = units.formatTicks(xAxis.ticks, xAxis.units, xAxis.scale);
         for (var i = 0, l = ticks.length; i < l; ++i) {

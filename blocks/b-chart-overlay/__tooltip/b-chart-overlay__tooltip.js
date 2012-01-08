@@ -2,6 +2,8 @@
 
 (function($) {
 
+var units = BEM.blocks['i-units'].instance;
+
 BEM.decl('b-chart-overlay__tooltip', {
 
     onSetMod : {
@@ -106,6 +108,8 @@ BEM.decl('b-chart-overlay__tooltip', {
                 xVal = xData[j],
                 yVal = yData[j],
                 shiftVal = shiftData[j] || 0,
+                xLabel = units.format(xVal, xAxis.units, xAxis.scale);
+                yLabel = units.format(yVal, yAxis.units, yAxis.scale);
                 x = xAxis.scale,
                 y = yAxis.scale;
 
@@ -113,7 +117,7 @@ BEM.decl('b-chart-overlay__tooltip', {
             py = y.f(yVal + shiftVal);
             $tooltip.css('left', px + 'px');
             $tooltip.css('bottom', py + 'px');
-            $tooltip.text(xVal + ',' + yVal + " -- " + iters);
+            $tooltip.text(xLabel + ", " + yLabel);
             $tooltip.show();
         } else {
             $tooltip.hide();

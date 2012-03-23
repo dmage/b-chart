@@ -12,7 +12,7 @@ BEM.decl('i-task-scheduler', {
             this.minPrio = null;
             this.currentPrio = null;
             this.currentTask = null;
-            this.lastTimeout = new Date();
+            this.lastTimeout = null;
         }
     },
 
@@ -211,7 +211,11 @@ BEM.decl('i-task-scheduler', {
             var _this = this;
             var context = (this.currentTask && this.currentTask.context) || {};
             var args = [_this].concat(context.args || []);
+            if (_this.lastTimeout === null) {
+                _this.lastTimeout = new Date();
+            }
             if (+new Date() - +this.lastTimeout > this.__self.lockTime) {
+                console.log('locked for', (+new Date() - +this.lastTimeout), 'ms; releasing for events collecting...');
                 setTimeout(function() {
                     _this.lastTimeout = new Date();
                     nextFunc.apply(_this, args);

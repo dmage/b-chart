@@ -15,7 +15,9 @@ BEM.decl('b-chart-overlay__tooltip', {
             $tooltip.css('position', 'absolute');
             $tooltip.css('min-width', '60px');
             $tooltip.css('background', 'white');
-            $tooltip.css('border', '1px solid #666');
+            $tooltip.css('padding', '0.3em 0.5em 0.1em');
+            $tooltip.css('border', '1px solid #000');
+            $tooltip.css('border-radius', '3px');
             $tooltip.hide();
 
             var $dot = $('<div>');
@@ -126,8 +128,19 @@ BEM.decl('b-chart-overlay__tooltip', {
                 x = xAxis.scale,
                 y = yAxis.scale;
 
+            var result = $.colorToRgba(item.color),
+                mixin = $.colorToRgba("#fff"),
+                lvl = 0.5;
+            result = {
+                r: Math.floor((1 - lvl) * result.r + lvl * mixin.r),
+                g: Math.floor((1 - lvl) * result.g + lvl * mixin.g),
+                b: Math.floor((1 - lvl) * result.b + lvl * mixin.b)
+            };
+            var color = 'rgba(' + result.r + ',' + result.g + ',' + result.b + ',0.8)';
+
             px = x.f(xVal);
             py = y.f(yVal + shiftVal);
+            $tooltip.css('background-color', color);
             $tooltip.css('left', px + 'px');
             $tooltip.css('bottom', py + 'px');
             $tooltip.text(xLabel + ", " + yLabel);

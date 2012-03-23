@@ -141,7 +141,13 @@ BEM.decl('b-chart-overlay__tooltip', {
             px = x.f(xVal);
             py = y.f(yVal + shiftVal);
             $tooltip.css('background-color', color);
-            $tooltip.css('left', px + 'px');
+            if (px < 0.75*width) {
+                $tooltip.css('left', px + 'px');
+                $tooltip.css('right', 'auto');
+            } else {
+                $tooltip.css('right', (width - px) + 'px');
+                $tooltip.css('left', 'auto');
+            }
             $tooltip.css('bottom', py + 'px');
             $tooltip.text(xLabel + ", " + yLabel);
             $tooltip.show();

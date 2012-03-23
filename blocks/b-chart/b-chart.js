@@ -553,7 +553,7 @@ BEM.DOM.decl('b-chart', {
 
         typeof force !== 'undefined' || (force = false);
 
-        var newHeight = 200,
+        var newHeight = _this.params.height || 200,
             newWidth = _this.elem('viewport').width();
         if (_this.dimensions.height == newHeight &&
             _this.dimensions.width == newWidth)

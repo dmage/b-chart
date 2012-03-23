@@ -2,6 +2,7 @@
 block b-chart {
 
     !this.elem, js: {
+        height: this.ctx.height,
         settingsProvider: this.ctx.settingsProvider
     }
 

@@ -18,10 +18,22 @@ BEM.decl('b-chart-overlay__tooltip', {
             $tooltip.css('border', '1px solid #666');
             $tooltip.hide();
 
+            var $dot = $('<div>');
+            $dot.css('position', 'absolute');
+            $dot.css('height', '0px');
+            $dot.css('width', '0px');
+            $dot.css('border', '2px solid #000');
+            $dot.css('border-radius', '2px');
+            $dot.hide();
+
             _this.$tooltip = $tooltip;
             _this.$tooltip.appendTo(_this.params.content.viewport);
 
+            _this.$dot = $dot;
+            _this.$dot.appendTo(_this.params.content.viewport);
+
             viewport.mousemove($.proxy(this.handleMove, this));
+            viewport.mouseleave($.proxy(this.handleLeave, this));
         }
     },
 
@@ -43,7 +55,8 @@ BEM.decl('b-chart-overlay__tooltip', {
             xAxes = content.xAxes,
             yAxes = content.yAxes,
             viewport = _this.params.content.viewport,
-            $tooltip = _this.$tooltip;
+            $tooltip = _this.$tooltip,
+            $dot = _this.$dot;
 
         var offset = viewport.offset();
         var px = (event.pageX - offset.left),
@@ -119,9 +132,19 @@ BEM.decl('b-chart-overlay__tooltip', {
             $tooltip.css('bottom', py + 'px');
             $tooltip.text(xLabel + ", " + yLabel);
             $tooltip.show();
+            $dot.css('border-color', item.color);
+            $dot.css('left', (px - 2) + 'px');
+            $dot.css('bottom', (py - 2) + 'px');
+            $dot.show();
         } else {
             $tooltip.hide();
+            $dot.hide();
         }
+    },
+
+    handleLeave : function(event) {
+        this.$tooltip.hide();
+        this.$dot.hide();
     }
 
 });

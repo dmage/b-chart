@@ -72,10 +72,10 @@ BEM.decl('b-chart-render__fill', {
         ctx.fillStyle = color;
 
         function fill() {
-            for (var j = i; j >= begin; --j) {
+            for (var j = i - 1; j >= begin; --j) {
                 x = (xf(xData[j]) + 0.5);
                 y = height - (yf((bottomData[j] || 0) + (shiftData[j] || 0)) + 0.5);
-                ctx.lineTo(x, y);
+                ctx.lineTo((x | 0) + 0.5, (y | 0) + 0.5);
             }
             ctx.fill();
         }
@@ -100,25 +100,26 @@ BEM.decl('b-chart-render__fill', {
             y = height - (yf(topData[i] + (shiftData[i] || 0)) + 0.5);
             if (prev === null) {
                 ctx.beginPath();
-                ctx.moveTo(x, y);
+                ctx.moveTo((x | 0) + 0.5, (y | 0) + 0.5);
                 begin = i;
             } else {
-                ctx.lineTo(x, y);
+                ctx.lineTo((x | 0) + 0.5, (y | 0) + 0.5);
             }
+
+            prev = topData[i];
+            ++i;
 
             ++dots;
             if (mozilla && dots == 10000) {
                 // restart line every 10000 points
                 // it gives a bit different result, but much faster on Linux
                 fill();
+                i -= 1; // connect pieces
 
                 dots = 0;
                 prev = null;
                 continue;
             }
-
-            prev = topData[i];
-            ++i;
         }
         if (dots > 0) {
             fill();

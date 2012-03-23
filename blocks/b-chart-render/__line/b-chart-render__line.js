@@ -71,9 +71,9 @@ BEM.decl('b-chart-render__line', {
             y = height - (yf(yData[i] + (shiftData[i] || 0)) + 0.5);
             if (prev === null) {
                 ctx.beginPath();
-                ctx.moveTo(x, y);
+                ctx.moveTo((x | 0) + 0.5, (y | 0) + 0.5);
             } else {
-                ctx.lineTo(x, y);
+                ctx.lineTo((x | 0) + 0.5, (y | 0) + 0.5);
             }
 
             ++dots;

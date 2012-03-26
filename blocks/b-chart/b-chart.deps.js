@@ -20,6 +20,7 @@
         { block: 'i-tango-color-scheme' }
     ],
     mustDeps: [
+        { block: 'i-chart' },
         {
             block: 'i-bem',
             elem: 'dom'

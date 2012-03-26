@@ -37,11 +37,13 @@ BEM.decl('b-chart-render__fill', {
             bottomData = item.renderData[bottomSliceName] || [],
             shiftData = item.renderData[shiftSliceName] || [];
 
-        console.time('render ' + itemNo);
+        //console.time('render ' + itemNo);
 
-        ctx.clearRect(0, 0, dim.width, dim.height);
-        canvas.css('left', '0');
-        canvas.css('width', '100%');
+        if (canvas) {
+            ctx.clearRect(0, 0, dim.width, dim.height);
+            canvas.css('left', '0');
+            canvas.css('width', '100%');
+        }
 
         var color = item.color || "rgb(0,0,0)";
         if (typeof colorMixin !== 'undefined' || typeof colorAlpha !== 'undefined') {
@@ -125,7 +127,7 @@ BEM.decl('b-chart-render__fill', {
             fill();
         }
 
-        console.timeEnd('render ' + itemNo);
+        //console.timeEnd('render ' + itemNo);
     }
 
 });

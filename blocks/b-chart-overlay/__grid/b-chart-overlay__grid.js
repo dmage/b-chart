@@ -19,8 +19,10 @@ BEM.decl('b-chart-overlay__grid', {
             ctx = layers[0].ctx,
             f, ticks;
 
-        canvas.css('left', '0');
-        canvas.css('width', '100%');
+        if (canvas) {
+            canvas.css('left', '0');
+            canvas.css('width', '100%');
+        }
         ctx.clearRect(0, 0, dim.width, dim.height);
 
         if (typeof ctx.mozDash !== 'undefined') {

@@ -25,11 +25,13 @@ BEM.decl('b-chart-render__line', {
             colorMixinLevel = this.params.colorMixinLevel || 0.5,
             mozilla = $.browser.mozilla;
 
-        console.time('render ' + itemNo);
+        //console.time('render ' + itemNo);
 
-        ctx.clearRect(0, 0, dim.width, dim.height);
-        canvas.css('left', '0');
-        canvas.css('width', '100%');
+        if (canvas) {
+            ctx.clearRect(0, 0, dim.width, dim.height);
+            canvas.css('left', '0');
+            canvas.css('width', '100%');
+        }
 
         var color = item.color || "rgb(0,0,0)";
         if (typeof colorMixin !== 'undefined') {
@@ -95,7 +97,7 @@ BEM.decl('b-chart-render__line', {
             ctx.stroke();
         }
 
-        console.timeEnd('render ' + itemNo);
+        //console.timeEnd('render ' + itemNo);
     }
 
 });

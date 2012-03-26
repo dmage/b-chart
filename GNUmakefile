@@ -1,5 +1,13 @@
 all:: bem-bl
 all:: $(patsubst %.bemjson.js,%.html,$(wildcard pages/*/*.bemjson.js))
+all:: $(patsubst %.bemdecl.js,%.js,$(wildcard pages/*/*.bemdecl.js))
+
+all:: s-bundle.js
+
+.PHONY: s-bundle.js
+
+s-bundle.js:
+	cat ../data/data-int.js s-bundle__{header,body,footer}.js > $@
 
 BEM_BUILD=bem build \
 	-l bem-bl/blocks-common/ \

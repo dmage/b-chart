@@ -1,0 +1,16 @@
+block b-legend {
+
+    !this.elem, js: {}
+
+    !this.elem, content: "b-legend content"
+
+    elem item, content: [
+        { tag: 'span', elem: 'item-color', attrs: { style: "background-color:" + this.ctx.color } },
+        { tag: 'span', elem: 'item-name', content: this.ctx.name }
+    ]
+
+    !this.elem, tag: 'ul'
+
+    elem item, tag: 'li'
+
+}

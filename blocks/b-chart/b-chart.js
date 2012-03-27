@@ -11,6 +11,11 @@ BEM.DOM.decl({ name: 'b-chart', baseBlock: 'i-chart' }, {
 
     onSetMod : {
         'js' : function() {
+            this.$legend = $(BEMHTML.apply([{ block: 'b-legend' }]));
+            this.elem('legend').append(this.$legend);
+            BEM.DOM.init(this.$legend);
+            this.legend = this.$legend.bem('b-legend');
+
             this.__base.apply(this, arguments);
         }
     },
@@ -280,6 +285,12 @@ BEM.DOM.decl({ name: 'b-chart', baseBlock: 'i-chart' }, {
             if (items[i].xAxis != xAxisNo) continue;
             _this._requestItemData(items[i]);
         }
+    },
+
+    setItems : function(items) {
+        this.__base.apply(this, arguments);
+
+        this.legend.setItems(items);
     },
 
     _updateItemData : function(item) {

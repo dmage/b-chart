@@ -2,11 +2,11 @@
     block: 'b-page',
     title: 'Simple chart',
     head: [
-        { elem: 'css', url: 'simple-chart.css'},
-        { elem: 'css', url: 'simple-chart.ie.css', ie: 'lt IE 8' },
+        { elem: 'css', url: '_simple-chart.css'},
+        { elem: 'css', url: '_simple-chart.ie.css', ie: 'lt IE 8' },
         { block: 'i-jquery', elem: 'core' },
-        { elem: 'js', url: 'simple-chart.bemhtml.js' },
-        { elem: 'js', url: 'simple-chart.js' }
+        { elem: 'js', url: '_simple-chart.bemhtml.js' },
+        { elem: 'js', url: '_simple-chart.js' }
     ],
     content: [
         {

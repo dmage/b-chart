@@ -1,18 +1,32 @@
-var myPath = require('bem/lib/path');
+var extend = require('bem/lib/util').extend,
+    PATH = require('path'),
 
-exports.techs = {
-    'bemdecl.js' : 'bem/lib/legacy-techs/bemdecl.js',
-    'deps.js' : 'bem/lib/legacy-techs/deps.js'
+    BEM_TECHS = '../../bem-bl/blocks-common/i-bem/bem/techs';
+
+exports.getTechs = function() {
+
+    return {
+        'bemjson.js': '',
+        'js': 'js-i',
+        'bemhtml': PATH.join(BEM_TECHS, 'bemhtml.js'),
+        'html': PATH.join(BEM_TECHS, 'html.js'),
+        'i18n': PATH.join(BEM_TECHS, 'i18n.js'),
+        'i18n.js': PATH.join(BEM_TECHS, 'i18n.js.js'),
+        'i18n.html': PATH.join(BEM_TECHS, 'i18n.html.js')
+    };
+
 };
 
-for (var alias in exports.techs) {
-    var p = exports.techs[alias];
-    if (/\.{1,2}\//.test(p)) exports.techs[alias] = myPath.absolute(p, __dirname);
-}
+exports.getConfig = function() {
 
-exports.defaultTechs = ['deps.js'];
+    return extend({}, this.__base() || {}, {
 
-exports.isIgnorablePath = function(path) {
-    return (/\.(git|svn)$/.test(path) ||
-        /(GNU|MAC)?[Mm]akefile/.test(path));
+        bundleBuildLevels: this.resolvePaths([
+            '../../bem-bl/blocks-common',
+            '../../bem-bl/blocks-desktop',
+            '../../blocks'
+        ])
+
+    });
+
 };

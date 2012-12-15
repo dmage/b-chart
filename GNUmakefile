@@ -11,3 +11,7 @@ endif
 .PHONY: clean
 clean::
 	$(BEM) make -m clean
+
+.PHONY: server
+server::
+	$(BEM) server

@@ -33,8 +33,7 @@ block b-chart {
                 }
             },
             {
-                elem: 'legend',
-                content: 'legend'
+                elem: 'legend'
             }
         ];
     }

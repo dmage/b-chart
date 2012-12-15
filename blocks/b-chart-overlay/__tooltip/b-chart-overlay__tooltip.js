@@ -26,6 +26,7 @@ BEM.decl('b-chart-overlay__tooltip', {
             $dot.css('width', '0px');
             $dot.css('border', '2px solid #000');
             $dot.css('border-radius', '2px');
+            $dot.css('box-shadow', '0 0 0 1px #fff');
             $dot.hide();
 
             _this.$tooltip = $tooltip;

@@ -388,7 +388,7 @@ B.decl('i-chart', {
         var _this = this,
             yAxis = this.content.yAxes[yAxisNo];
 
-        yAxis.ticks = yAxis.scale.ticks(Math.floor(_this.dimensions.height / 40));
+        yAxis.ticks = yAxis.scale.ticks(Math.floor(_this.dimensions.height / 40), yAxis.units);
 
         var ticks = units.formatTicks(yAxis.ticks, "", yAxis.scale);
         for (var i = 0, l = ticks.length; i < l; ++i) {
@@ -403,7 +403,7 @@ B.decl('i-chart', {
         var _this = this,
             xAxis = this.content.xAxes[xAxisNo];
 
-        xAxis.ticks = xAxis.scale.ticks(Math.floor(_this.dimensions.width / 60));
+        xAxis.ticks = xAxis.scale.ticks(Math.floor(_this.dimensions.width / 60), xAxis.units);
 
         var ticks = units.formatTicks(xAxis.ticks, xAxis.units, xAxis.scale);
         for (var i = 0, l = ticks.length; i < l; ++i) {

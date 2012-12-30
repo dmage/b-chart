@@ -19,7 +19,7 @@ BEM.DOM.decl('b-axis', {
                 elem: 'value',
                 attrs: { style: offset + ':' + tick.offset + 'px' },
                 content: [
-                    { elem: 'label', content: tick.label },
+                    { elem: 'label', content: tick.label + (tick.extraLabel ? '<br>' + tick.extraLabel : '') },
                     { elem: 'tick' }
                 ]
             });

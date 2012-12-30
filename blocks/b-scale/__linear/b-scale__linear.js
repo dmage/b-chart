@@ -52,9 +52,13 @@ BEM.decl('b-scale__linear', {
         return undefined;
     },
 
-    ticks : function(n) {
+    ticks : function(n, units) {
         var range = (this.inputMax - this.inputMin);
         var delta = range/n;
+
+        if (units == 'unixtime' && range > 2*24*60*60) {
+            return this.dayTicks(n);
+        }
 
         var l = Math.ceil(Math.log(delta)/Math.log(10));
 
@@ -85,6 +89,27 @@ BEM.decl('b-scale__linear', {
             x += delta;
         }
 
+        return result;
+    },
+
+    dayTicks : function(n) {
+        var range = (this.inputMax - this.inputMin);
+        var minD = new Date(this.inputMin*1000);
+        var maxD = new Date(this.inputMax*1000);
+        var d = new Date(this.inputMin*1000);
+        d.setHours(0);
+        d.setMinutes(0);
+        d.setSeconds(0);
+        d.setMilliseconds(0);
+        var result = [];
+        while (+d <= +maxD) {
+            if (+d < +minD) {
+                d.setDate(d.getDate() + 1);
+                continue;
+            }
+            result.push(+d/1000);
+            d.setDate(d.getDate() + 1);
+        }
         return result;
     },
 

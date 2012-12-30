@@ -40,14 +40,16 @@ BEM.decl('i-units', {
         if (units == "unixtime") {
             for (var i = 0, l = ticks.length; i < l; ++i) {
                 var tickValue = ticks[i];
-                labeledTicks.push({
+                var labeledTick = {
                     tickValue: tickValue,
                     label: this.format(tickValue, units, scale)
-                });
+                };
+                var d = new Date(ticks[i]*1000);
+                if (i == 0 || new Date(ticks[i - 1]*1000).getDate() != d.getDate()) {
+                    labeledTick.extraLabel = d.getDate() + '.' + (d.getMonth() + 1) + '.' + d.getFullYear();
+                }
+                labeledTicks.push(labeledTick);
             }
-
-            var d = new Date(ticks[0]*1000);
-            labeledTicks[0].extraLabel = d.getDate() + '.' + (d.getMonth() + 1) + '.' + d.getFullYear();
         } else {
             for (var i = 0, l = ticks.length; i < l; ++i) {
                 var tickValue = ticks[i];

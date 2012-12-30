@@ -19,8 +19,19 @@ BEM.decl('b-scale__linear', {
     },
 
     input : function(min, max) {
-        if (min >= max) {
-            console.log('b-scale__linear.input: min >= max;', { min: min, max: max });
+        if (min == max) {
+            if (min >= 0 && min - 1 >= 0) {
+                this.inputMin = min - 1;
+                this.inputMax = min + 2;
+            } else if (min >= 0 && min - 1 < 0) {
+                this.inputMin = 0;
+                this.inputMax = 3*min;
+            } else if (min < 0) {
+                this.inputMin = min - 2;
+                this.inputMax = min + 1;
+            }
+        } else if (min > max) {
+            console.log('b-scale__linear.input: min > max;', { min: min, max: max });
             this.inputMax = min;
             this.inputMin = max;
         } else {
